@@ -1,0 +1,11 @@
+Motivation: 
+Differential Privacy promises privacy protection when practicing statistical analysis of data. One method of Differential Privacy is the addition of noise, Y, to the data of interest, q, creating the noisy (q+Y) = q̃.
+In statistical analysis, the focus is often on functions of q̃ , and it is often the case that f(q̃) is biased for f(q). This issue has been addressed by Calmon et al., who have developed an estimator, g(q̃), which is unbiased for f(q). They use Laplace noise and mainly work with twice-differentiable functions that are tempered distributions. 
+As this thesis builds on the findings of Calmon et al., the work included will mainly use Laplace noise, however the focus will be on polynomial functions, unless other mentioned, as this restricted class are generally nice behaving and can also be used to estimate other functions of interest.
+This thesis researches the possibilities which the unbiased estimator paves the way for, including: 
+
+i) exploring whether a meaningful trade-off between variance and bias can be defined for the estimators of f(q). This trade-off will be attempted to be expressed analytically. The deliverables will be theoretical results. 
+ii) exploring the structure of the unbiased estimator, besides researching to what extend the superiority of the unbiased estimator reaches, and if there are cases for which it might not be better. This can be done with either mathematical proof or empirical evidence. Further, the deliverables will be background knowledge and theoretical analysis. 
+iii) constructing a code base which makes it possible to compute the unbiased estimator, the variance of said estimator, etc. of a given polynomial. This will also serve as a tool for the theoretical parts of this thesis.   
+The deliverables will be code and empirical analysis of some of the theoretical findings. 
+iv) exploring the extension from the univariate case to multiple variables, focusing on the continuous case. The deliverables will be theoretical analysis. 
