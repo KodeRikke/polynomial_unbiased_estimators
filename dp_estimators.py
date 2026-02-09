@@ -10,6 +10,27 @@ __all__ = ["EstimatorSystem",
            "EstimatorAnalyzer"
            ]
 
+"""
+Explaining the code design: 
+The code is designed using the Strategy design pattern, which allows for flexibility in choosing different noise models and estimation strategies.
+Further the Facade design pattern is used to provide a simple interface for users to interact with the system, hiding the complexities of the underlying implementations.
+It is the EstimatorSystem class that serves as the facade, providing methods for getting estimators and comparing them, while the other classes implement the specific strategies and analysis.
+The main classes are:
+- EstimatorSystem: the main interface for users to interact with the system, providing methods for getting estimators and comparing them.
+- ComparisonReport: responsible for generating a report comparing the naive and unbiased estimators for a given polynomial function.
+- NoiseModel: an abstract class defining the interface for different noise models, with methods for calculating moments and unbiased transforms.
+- LaplaceNoiseModel: a concrete implementation of the NoiseModel for Laplace noise, providing methods for calculating moments and unbiased transforms specific to Laplace noise.
+- GaussianNoiseModel: a concrete implementation of the NoiseModel for Gaussian noise, which can be implemented similarly to LaplaceNoiseModel if needed.
+- EstimatorContext: responsible for managing different noise/estimation strategies and providing methods for getting naive and unbiased estimators.
+- EstimatorAnalyzer: responsible for analyzing the properties of estimators, such as calculating mean and variance, using the noise model's moment calculations.
+This design allows for easy extension to other noise models and estimation strategies by simply implementing new classes that adhere to the defined interfaces, without needing to modify the existing codebase.
+The name "EstimatorContext" is beause it reflects the role of "context" in the Strategy pattern, where it maintains a reference to one of the concrete strategies, 
+and interacts with this object only through the interface defined by the abstract strategy (NoiseModel).
+The name "EstimatorAnalyzer" is chosen to reflect its role in analyzing the properties of estimators, such as calculating mean and variance,
+but it serves the same purpose as the "Context" in the Strategy pattern, only here the estimator and analysis of the estimator are split into two classes, 
+where the EstimatorContext is responsible for managing the estimation strategies and the EstimatorAnalyzer is responsible for analyzing the properties of the estimators.
+"""
+
 # --- EstimatorSystem ---
 class EstimatorSystem:
     """
