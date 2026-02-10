@@ -72,5 +72,8 @@ ComparisonReport o-- EstimatorSystem : references
 %% "Uses" relationships
 EstimatorContext ..> NoiseModel : calls unbiased_transform()
 EstimatorAnalyzer ..> NoiseModel : calls moment()
-ComparisonReport ..> EstimatorAnalyzer : uses mean()/variance()
-ComparisonReport ..> EstimatorContext : uses naive()/unbiased()
+ComparisonReport ..> EstimatorSystem : calls estimator(), analyzer.mean(), analyzer.variance()
+
+%% Indirect 
+%%ComparisonReport ..> EstimatorAnalyzer : uses mean()/variance()
+%%ComparisonReport ..> EstimatorContext : uses naive()/unbiased()
