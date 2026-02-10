@@ -148,7 +148,7 @@ class NoiseModel:
         moment(n, q): calculates the n-th moment of the noise distribution given q.
         unbiased_transform(f, x): returns a function g(x) such that E[g(q + noise)] = f(q) for the given polynomial f."""
     
-    def moment(self, n, x):
+    def moment(self, n, q):
         # \mu_n(q) = E[(q + noise)^n] for x = q + noise
         raise NotImplementedError("Subclasses must implement this method")
     
