@@ -116,7 +116,7 @@ class ReportFormatter:
                     else:
                         # IMPORTANT: print leaf as a block, not inline
                         out.append(f"{pad}{key}:")
-                        out.append(_indent_block(leaf, spaces=2 * (indent + 1)))
+                        out.append(self._indent_block(leaf, spaces=2 * (indent + 1)))
 
             return "\n".join(out)
 
@@ -130,7 +130,7 @@ class ReportFormatter:
                     nv = self.normalize(v, mode=mode, simplify_level=simplify_level)
                     leaf = self.format_leaf(nv, latex=latex)
                     out.append(f"{pad}-")
-                    out.append(_indent_block(leaf, spaces=2 * (indent + 1)))
+                    out.append(self._indent_block(leaf, spaces=2 * (indent + 1)))
             return "\n".join(out)
 
         # leaf
