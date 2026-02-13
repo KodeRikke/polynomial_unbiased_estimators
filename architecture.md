@@ -5,6 +5,15 @@ direction LR
 %% The following is an UML diagram, and it can be plugged into Mermaid to se the finished diagram,
 %% in case there are some changes. This is the first draft, before adding any Gaussian Dilly Dally.
 
+class ReportFormatter {
+  +delta: sympy.Symbol
+  +epsilon: sympy.Symbol
+  +normalize(expression, mode="grouped", simplify_level=2) sympy.Expr
+  +format_leaf(value, latex=False) str
+  +render(obj, mode="grouped", latex=False, simplify_level=2, indent=0) str
+  -_indent_block(text: str, spaces: int) str
+}
+
 class EstimatorSystem {
   +context: EstimatorContext
   +analyzer: EstimatorAnalyzer
@@ -66,6 +75,7 @@ NoiseModel <|-- GaussianNoiseModel : inherits
 %% Composition / aggregation
 EstimatorSystem *-- EstimatorContext : owns
 EstimatorSystem *-- EstimatorAnalyzer : owns
+EstimatorSystem *-- ReportFormatter : owns
 
 ComparisonReport o-- EstimatorSystem : references
 
@@ -77,3 +87,6 @@ ComparisonReport ..> EstimatorSystem : calls estimator(), analyzer.mean(), analy
 %% Indirect 
 %%ComparisonReport ..> EstimatorAnalyzer : uses mean()/variance()
 %%ComparisonReport ..> EstimatorContext : uses naive()/unbiased()
+ComparisonReport ..> EstimatorAnalyzer : uses mean()/variance()
+ComparisonReport ..> EstimatorContext : uses naive()/unbiased()
+EstimatorSystem ..> ReportFormatter : uses render()
