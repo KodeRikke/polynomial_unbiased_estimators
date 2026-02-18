@@ -300,22 +300,22 @@ class EstimatorAnalyzer:
         degree = poly.degree()
         print(f"Estimator: {estimator}, degree: {degree}, coeffs: {coeffs}")
 
-        mu = []
-        for n in range(degree + 1):
-            print(f"Checking coeff {n}: {coeffs[n]}")
-            print(f"Free symbols in coeff {n}: {coeffs[n].free_symbols}")
-            print(f"Does coeff {n} depend on x? {coeffs[n].has(self.x)}")
-            print(f"Range of loop: n={n}, degree={degree}")
-            if not coeffs[n].free_symbols.issubset({self.q}):
-                raise ValueError("Coefficients must be functions of q only.")
-            if not coeffs[n].has(self.x):
-                raise ValueError("Coefficients must depend on x.")
-            if not coeffs[n].has(self.q):
-                raise ValueError("Coefficients must depend on q.")
-            else:
-                mu.append(self.noise_model.moment(n, self.q))
+        #mu = []
+        #for n in range(degree + 1):
+        #    print(f"Checking coeff {n}: {coeffs[n]}")
+        #    print(f"Free symbols in coeff {n}: {coeffs[n].free_symbols}")
+        #    print(f"Does coeff {n} depend on x? {coeffs[n].has(self.x)}")
+        #    print(f"Range of loop: n={n}, degree={degree}")
+        #    if not coeffs[n].free_symbols.issubset({self.q}):
+        #        raise ValueError("Coefficients must be functions of q only.")
+        #    if not coeffs[n].has(self.x):
+        #        raise ValueError("Coefficients must depend on x.")
+        #    if not coeffs[n].has(self.q):
+        #        raise ValueError("Coefficients must depend on q.")
+        #    else:
+        #        mu.append(self.noise_model.moment(n, self.q))
 
-        #mu = [self.noise_model.moment(n, self.q) for n in range(degree + 1)]
+        mu = [self.noise_model.moment(n, self.q) for n in range(degree + 1)]
         expr = 0
         for i in range(degree + 1):
             a_i = coeffs[i]
