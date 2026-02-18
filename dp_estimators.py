@@ -43,6 +43,9 @@ class EstimatorSystem:
         x: a variable s.a. an int, float or sympy symbol representing the observed statistic, x = q + noise 
     It changes q and x into strings, s.t they can be changed to sympy symbols in the context and analyzer."""
     def __init__(self, noise_model, q, x):
+        self.noise_model = noise_model
+        self.q = sp.Symbol(str(q), real=True)
+        self.x = sp.Symbol(str(x), real=True)
         self.context = EstimatorContext(noise_model, str(q), str(x)) # initialize context
         self.analyzer = EstimatorAnalyzer(noise_model, str(q), str(x)) # initialize analyzer
 
@@ -295,8 +298,24 @@ class EstimatorAnalyzer:
         
         coeffs = poly.all_coeffs() 
         degree = poly.degree()
+        print(f"Estimator: {estimator}, degree: {degree}, coeffs: {coeffs}")
 
-        mu = [self.noise_model.moment(n, self.q) for n in range(degree + 1)]
+        mu = []
+        for n in range(degree + 1):
+            print(f"Checking coeff {n}: {coeffs[n]}")
+            print(f"Free symbols in coeff {n}: {coeffs[n].free_symbols}")
+            print(f"Does coeff {n} depend on x? {coeffs[n].has(self.x)}")
+            print(f"Range of loop: n={n}, degree={degree}")
+            if not coeffs[n].free_symbols.issubset({self.q}):
+                raise ValueError("Coefficients must be functions of q only.")
+            if not coeffs[n].has(self.x):
+                raise ValueError("Coefficients must depend on x.")
+            if not coeffs[n].has(self.q):
+                raise ValueError("Coefficients must depend on q.")
+            else:
+                mu.append(self.noise_model.moment(n, self.q))
+
+        #mu = [self.noise_model.moment(n, self.q) for n in range(degree + 1)]
         expr = 0
         for i in range(degree + 1):
             a_i = coeffs[i]
