@@ -30,11 +30,13 @@ It is done in the following ways:
 def main():
     # Define the values of q and the degrees of Chebychev polynomials:
     # This is the only place you should change values!
-    q_values = [-1, -sp.Rational(3,4), -sp.Rational(1,2), -sp.Rational(1,4), 0, sp.Rational(1,2), sp.Rational(3,4), 1]
-    chebyshev_degrees = [2, 3, 4, 6, 9, 10, 12]
+    #q_values = [-1, -sp.Rational(3,4), -sp.Rational(1,2), -sp.Rational(1,4), 0, sp.Rational(1,2), sp.Rational(3,4), 1]
+    q_values = [0, sp.Rational(1,4), sp.Rational(1,2), sp.Rational(3,4), 1]
+    chebyshev_degrees = [3, 6, 9] #, 10, 12]
     eps_range = (0.1, 10) # range of epsilon values for plotting
+    Delta_values = [0.5, 1, 2] # fix Delta for plotting
+
     which = ["variance_ratio", "relative_variance"] # which metric to plot
-    Delta_value = 1 # fix Delta for plotting
     path_for_plots = "plots" # path to save the plots
     both = "both" # either "both", "by_degree" or "by_q" to control which plots to create
 
@@ -48,50 +50,52 @@ def main():
         # Create the plots for each degree of Chebyshev polynomials:
         for metric in which:
             for n in chebyshev_degrees:
-                print(f"Evaluating {metric} for Chebyshev degree {n}...")
-                by_degree_plots.setdefault(metric, {})[n] = eval_for_fixed_degree(
-                    data["by_degree"][n],
-                    q_symbol=data["symbols"]["q"],
-                    q_values=q_values,
-                    base_subs={data["symbols"]["Delta"]: Delta_value},
-                    epsilon_symbol=data["symbols"]["epsilon"],
-                    eps_grid=eps_grid,
-                    which_metric=metric,
-                )
-                print(f"Plotting {metric} for Chebyshev degree {n}...")
-                plot(
-                    x_label=f"$\\epsilon \\smallin [{eps_range[0]}, {eps_range[1]}]$",
-                    y_label=metric.replace("_", " ").title(),
-                    x_grid=eps_grid,
-                    y_data=by_degree_plots[metric][n],
-                    title=f"{metric.replace('_', ' ').title()} for Chebyshev Degree {n}, $\\Delta$ = {Delta_value}",
-                    path=path_for_plots
-                )
+                for Delta_value in Delta_values:
+                    print(f"Evaluating {metric} for Chebyshev degree {n}...")
+                    by_degree_plots.setdefault(metric, {})[n] = eval_for_fixed_degree(
+                        data["by_degree"][n],
+                        q_symbol=data["symbols"]["q"],
+                        q_values=q_values,
+                        base_subs={data["symbols"]["Delta"]: Delta_value},
+                        epsilon_symbol=data["symbols"]["epsilon"],
+                        eps_grid=eps_grid,
+                        which_metric=metric,
+                    )
+                    print(f"Plotting {metric} for Chebyshev degree {n}...")
+                    plot(
+                        x_label=f"$\\epsilon \\smallin [{eps_range[0]}, {eps_range[1]}]$",
+                        y_label=metric.replace("_", " ").title(),
+                        x_grid=eps_grid,
+                        y_data=by_degree_plots[metric][n],
+                        title=f"{metric.replace('_', ' ').title()} for Chebyshev Degree {n}, $\\Delta$ = {Delta_value}",
+                        path=path_for_plots
+                    )
     
     if both in ("both", "by_q"):
         by_q_plots = {}
         # Create the plots for each value of q:
         for metric in which:
             for q_val in q_values:
-                print(f"Evaluating {metric} for q = {q_val}...")
-                by_q_plots.setdefault(metric, {})[q_val] = eval_for_fixed_q(
-                    data["by_q"][q_val],
-                    degree_values=chebyshev_degrees,
-                    base_subs={data["symbols"]["Delta"]: Delta_value},
-                    epsilon_symbol=data["symbols"]["epsilon"],
-                    eps_grid=eps_grid,
-                    which_metric=metric,
-                )
-                print(f"Plotting {metric} for q = {q_val}...")
-                plot(
-                    x_label=f"$\\epsilon \\smallin [{eps_range[0]}, {eps_range[1]}]$",
-                    y_label=metric.replace("_", " ").title(),
-                    x_grid=eps_grid,
-                    y_data=by_q_plots[metric][q_val],
-                    title=f"{metric.replace('_', ' ').title()} for q = {q_val}, $\\Delta$ = {Delta_value}",
-                    path=path_for_plots
-                )
-
+                for Delta_value in Delta_values:
+                    print(f"Evaluating {metric} for q = {q_val}...")
+                    by_q_plots.setdefault(metric, {})[q_val] = eval_for_fixed_q(
+                        data["by_q"][q_val],
+                        degree_values=chebyshev_degrees,
+                        base_subs={data["symbols"]["Delta"]: Delta_value},
+                        epsilon_symbol=data["symbols"]["epsilon"],
+                        eps_grid=eps_grid,
+                        which_metric=metric,
+                    )
+                    print(f"Plotting {metric} for q = {q_val}...")
+                    plot(
+                        x_label=f"$\\epsilon \\smallin [{eps_range[0]}, {eps_range[1]}]$",
+                        y_label=metric.replace("_", " ").title(),
+                        x_grid=eps_grid,
+                        y_data=by_q_plots[metric][q_val],
+                        title=f"{metric.replace('_', ' ').title()} for q = {q_val}, $\\Delta$ = {Delta_value}",
+                        path=path_for_plots
+                    )
+    
 def build_system():
     # Defining symbolic values:
     Delta = sp.Symbol("Delta", real=True, positive=True)
