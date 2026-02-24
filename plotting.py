@@ -1,63 +1,96 @@
 import sympy as sp
 import numpy as np
+
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+
 from dp_estimators import EstimatorSystem, LaplaceNoiseModel
 
 """
 This file contains code for plotting the variance gap of the naive and unbiased estimators.
 It is done in the following ways:
-1. A plot for each degree of Chebychev polynomials, d in {5, 10, 15, 20}, we have:
+1. A plot for each degree of Chebychev polynomials, d in {chebyshev_degrees}, we have:
     - x-axis: epsilon 
     - y-axis: the variance ratio, i.e. (var. of unbiased estimator) / (var. of naive estimator)
-    - a line for each value of q in {-1, -0.5, 0, 0.5, 1}
-2. A plot for each degree of Chebychev polynomials, d in {5, 10, 15, 20}, we have:
+    - a line for each value of q in {q_values}
+2. A plot for each degree of Chebychev polynomials, d in {chebyshev_degrees}, we have:
     - x-axis: epsilon 
     - y-axis: the relative variance, i.e. ((var. of unbiased estimator) - (var. of naive estimator)) / (var. of naive estimator)
-    - a line for each value of q in {-1, -0.5, 0, 0.5, 1}
-3. A plot for each value of q in {-1, -0.5, 0, 0.5, 1}, we have: 
+    - a line for each value of q in {q_values}
+3. A plot for each value of q in {q_values}, we have: 
     - x-axis: epsilon 
     - y-axis: the variance ratio, i.e. (var. of unbiased estimator) / (var. of naive estimator)
-    - a line for each Chebyshev polynomial with d in {5, 10, 15, 20}
-4. A plot for each value of q in {-1, -0.5, 0, 0.5, 1}, we have: 
+    - a line for each Chebyshev polynomial with d in {chebyshev_degrees}
+4. A plot for each value of q in {q_values}, we have: 
     - x-axis: epsilon 
     - y-axis: the relative variance, i.e. ((var. of unbiased estimator) - (var. of naive estimator)) / (var. of naive estimator)
-    - a line for each Chebyshev polynomial with d in {5, 10, 15, 20}
+    - a line for each Chebyshev polynomial with d in {chebyshev_degrees}
 """
 def main():
     # Define the values of q and the degrees of Chebychev polynomials:
-    q_values = [-sp.Rational(9,10), -sp.Rational(1, 2), 0, sp.Rational(1,10),sp.Rational(1, 3), 1] # same as [-1, -0.5, 0, 0.5, 1]
-    chebyshev_degrees = [5, 10, 15, 20]
-    eps_grid = np.linspace(0.1, 10, 300) # grid of epsilon values for plotting
+    # This is the only place you should change values!
+    q_values = [-1, -sp.Rational(3,4), -sp.Rational(1,2), -sp.Rational(1,4), 0, sp.Rational(1,2), sp.Rational(3,4), 1]
+    chebyshev_degrees = [2, 3, 4, 6, 9, 10, 12]
+    eps_range = (0.1, 10) # range of epsilon values for plotting
     which = ["variance_ratio", "relative_variance"] # which metric to plot
     Delta_value = 1 # fix Delta for plotting
+    path_for_plots = "plots" # path to save the plots
+    both = "both" # either "both", "by_degree" or "by_q" to control which plots to create
 
+# -----------------------------------------------------------------------------------------------------------------------
     # Create the plot data
     data = create_plot_data(q_values, chebyshev_degrees)
+    eps_grid = np.linspace(start=eps_range[0], stop=eps_range[1], num=300) # grid of epsilon values for plotting
 
-    by_degree_plots = {}
-    # Create the plots for each degree of Chebyshev polynomials:
-    # OBS! Will not plot multiple plots at a time, 
-    # the terminal will just keep running;;; Fix this...!!
-    for metric in which:
-        for n in chebyshev_degrees:
-            print(f"Evaluating {metric} for Chebyshev degree {n}...")
-            by_degree_plots[n] = eval_for_fixed_degree(
-                data["by_degree"][n],
-                q_symbol=data["symbols"]["q"],
-                q_values=q_values,
-                base_subs={data["symbols"]["Delta"]: Delta_value},
-                epsilon_symbol=data["symbols"]["epsilon"],
-                eps_grid=eps_grid,
-                which_metric=metric,
-            )
-            print(f"Plotting {metric} for Chebyshev degree {n}...")
-            plot(
-                x_label="epsilon",
-                y_label=metric.replace("_", " ").title(),
-                x_grid=eps_grid,
-                y_data=by_degree_plots[n],
-                title=f"{metric.replace('_', ' ').title()} for Chebyshev Degree {n}, Delta = {Delta_value}"
-            )   
+    if both in ("both", "by_degree"):
+        by_degree_plots = {}
+        # Create the plots for each degree of Chebyshev polynomials:
+        for metric in which:
+            for n in chebyshev_degrees:
+                print(f"Evaluating {metric} for Chebyshev degree {n}...")
+                by_degree_plots.setdefault(metric, {})[n] = eval_for_fixed_degree(
+                    data["by_degree"][n],
+                    q_symbol=data["symbols"]["q"],
+                    q_values=q_values,
+                    base_subs={data["symbols"]["Delta"]: Delta_value},
+                    epsilon_symbol=data["symbols"]["epsilon"],
+                    eps_grid=eps_grid,
+                    which_metric=metric,
+                )
+                print(f"Plotting {metric} for Chebyshev degree {n}...")
+                plot(
+                    x_label=f"$\\epsilon \\smallin [{eps_range[0]}, {eps_range[1]}]$",
+                    y_label=metric.replace("_", " ").title(),
+                    x_grid=eps_grid,
+                    y_data=by_degree_plots[metric][n],
+                    title=f"{metric.replace('_', ' ').title()} for Chebyshev Degree {n}, $\\Delta$ = {Delta_value}",
+                    path=path_for_plots
+                )
+    
+    if both in ("both", "by_q"):
+        by_q_plots = {}
+        # Create the plots for each value of q:
+        for metric in which:
+            for q_val in q_values:
+                print(f"Evaluating {metric} for q = {q_val}...")
+                by_q_plots.setdefault(metric, {})[q_val] = eval_for_fixed_q(
+                    data["by_q"][q_val],
+                    degree_values=chebyshev_degrees,
+                    base_subs={data["symbols"]["Delta"]: Delta_value},
+                    epsilon_symbol=data["symbols"]["epsilon"],
+                    eps_grid=eps_grid,
+                    which_metric=metric,
+                )
+                print(f"Plotting {metric} for q = {q_val}...")
+                plot(
+                    x_label=f"$\\epsilon \\smallin [{eps_range[0]}, {eps_range[1]}]$",
+                    y_label=metric.replace("_", " ").title(),
+                    x_grid=eps_grid,
+                    y_data=by_q_plots[metric][q_val],
+                    title=f"{metric.replace('_', ' ').title()} for q = {q_val}, $\\Delta$ = {Delta_value}",
+                    path=path_for_plots
+                )
 
 def build_system():
     # Defining symbolic values:
@@ -125,16 +158,6 @@ def create_plot_data(q_values, chebyshev_degrees):
         "by_q": by_q
     }
 
-def eval_by_q(expr_dict_by_q, q_symbol, chebyshev_degrees, subs_dict, epsilon_symbol, eps_grid, which_metric="variance_ratio"):
-    eval_data = {}
-    for q_val, degree_exprs in expr_dict_by_q.items():
-        eval_data[q_val] = {}
-        for n in chebyshev_degrees:
-            expr = degree_exprs[which_metric]
-            subs_dict[q_symbol] = q_val
-            eval_data[q_val][n] = eval_over_epsilon(expr, epsilon_symbol, eps_grid, subs_dict)
-    return eval_data
-
 def eval_for_fixed_degree(curves_by_q, q_symbol, q_values, base_subs, epsilon_symbol, eps_grid, which_metric="variance_ratio"):
     """
     curves_by_q[q_val][which_metric] is a SymPy expr.
@@ -146,14 +169,24 @@ def eval_for_fixed_degree(curves_by_q, q_symbol, q_values, base_subs, epsilon_sy
         subs = dict(base_subs)   # copy
         subs[q_symbol] = q_val
         y = eval_over_epsilon(expr, epsilon_symbol, eps_grid, subs)
-        # clean inf/nan for plotting
-        y = np.array(y, dtype=float)
-        y[~np.isfinite(y)] = np.nan
         out[str(q_val)] = y   # label as string for legend
     return out
 
+def eval_for_fixed_q(curves_by_degree, degree_values, base_subs, epsilon_symbol, eps_grid, which_metric="variance_ratio"):
+    """
+    curves_by_degree[n][which_metric] is a SymPy expr.
+    Returns: out[n] -> numpy array
+    """
+    out = {}
+    for n in degree_values:
+        expr = curves_by_degree[n][which_metric]
+        subs = dict(base_subs)   # copy
+        subs["n"] = n
+        y = eval_over_epsilon(expr, epsilon_symbol, eps_grid, subs)
+        out[f"degree {n}"] = y   # label as string for legend
+    return out
 
-def plot(x_label, y_label, x_grid, y_data, title=None):
+def plot(x_label, y_label, x_grid, y_data, title=None, path=None):
     plt.figure(figsize=(10, 6))
     for label, y_values in y_data.items():
         plt.plot(x_grid, y_values, label=label)
@@ -163,7 +196,12 @@ def plot(x_label, y_label, x_grid, y_data, title=None):
         plt.title(title)
     plt.legend()
     plt.grid()
-    plt.show()
+    plt.savefig(
+        f"{path}/plot_{title.replace('$', '').replace('\\', '').replace('=', '').replace(',', '').replace(' ', '_').replace('Variance', 'Var').replace('Chebyshev_Degree', 'Cheb_D').replace('/', 'over')}.png", 
+        dpi=200, 
+        bbox_inches='tight'
+    )
+    plt.close()
 
 def eval_over_epsilon(expr: sp.Expr, epsilon_symbol: sp.Symbol, eps_grid: np.ndarray, subs_dict: dict) -> np.ndarray:
     """
@@ -174,7 +212,17 @@ def eval_over_epsilon(expr: sp.Expr, epsilon_symbol: sp.Symbol, eps_grid: np.nda
     """
     eval_expr = sp.simplify(expr.subs(subs_dict))
     eval_func = sp.lambdify(epsilon_symbol, eval_expr, modules=["numpy"])
-    return eval_func(eps_grid)
+    y = eval_func(eps_grid)
+
+    y = np.asarray(y, dtype=float) # force to be the same shape as eps_grid
+
+    if y.shape == (): # scalar output, make it an array of the same shape as eps_grid
+        y = np.full_like(eps_grid, fill_value=float(y), dtype=float)
+    elif y.shape == (1,): # length - 1 array
+        y = np.full_like(eps_grid, fill_value=float(y[0]), dtype=float)
+
+    y[~np.isfinite(y)] = np.nan # clean inf/nan for plotting
+    return y
 
 if __name__ == "__main__":
     main()
