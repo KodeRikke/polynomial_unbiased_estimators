@@ -38,7 +38,7 @@ def main():
 
     which = ["variance_ratio", "relative_variance"] # which metric to plot
     path_for_plots = "plots" # path to save the plots
-    both = "both" # either "both", "by_degree" or "by_q" to control which plots to create
+    both = "by_degree" # either "both", "by_degree" or "by_q" to control which plots to create
 
 # -----------------------------------------------------------------------------------------------------------------------
     # Create the plot data
@@ -193,6 +193,20 @@ def eval_for_fixed_q(curves_by_degree, degree_values, base_subs, epsilon_symbol,
 def plot(x_label, y_label, x_grid, y_data, title=None, path=None):
     plt.figure(figsize=(10, 6))
     for label, y_values in y_data.items():
+        # plot 2 text labels indicating on which part of the 
+        # x-axis the unbiased estimator has lower variance 
+        # (if variance ratio < 1) or higher variance (if variance ratio > 1)
+        # same with the relative variance plot, but the threshold is 0 instead of 1
+        if y_label == "Variance Ratio":
+            threshold = 1
+            plt.axhline(y=threshold, color='black', linestyle='--', linewidth=1)
+            plt.text(x_grid[len(x_grid)//23], threshold*1.05, 'Naive has lower variance', color='black', fontsize=9)
+            plt.text(x_grid[len(x_grid)//23], threshold*0.95, 'Unbiased has lower variance', color='black', fontsize=9)
+        elif y_label == "Relative Variance":
+            threshold = 0
+            plt.axhline(y=threshold, color='black', linestyle='--', linewidth=1)
+            plt.text(x_grid[len(x_grid)//23], 0.05, 'Naive has lower variance', color='black', fontsize=9)
+            plt.text(x_grid[len(x_grid)//23], -0.05, 'Unbiased has lower variance', color='black', fontsize=9)
         plt.plot(x_grid, y_values, label=label)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
