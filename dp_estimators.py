@@ -222,9 +222,9 @@ class ComparisonReport:
                 "variance": variance_unbiased
             },
             "mean_gap": mean_unbiased - mean_naive,
-            "variance_gap": variance_unbiased - variance_naive,
-            "variance_ratio": sp.oo if variance_naive.is_zero else variance_unbiased / variance_naive,
-            "relative_variance": sp.Integer(0) if variance_naive.is_zero else (variance_unbiased - variance_naive) / variance_naive
+            "variance_gap": variance_unbiased - variance_naive, # if NEGATIVE, then unbiased has lower variance
+            "variance_ratio": sp.oo if variance_naive.is_zero else variance_unbiased / variance_naive, # if LESS than 1, then unbiased has lower variance 
+            "relative_variance": sp.Integer(0) if variance_naive.is_zero else (variance_unbiased - variance_naive) / variance_naive # if negative, then unbiased has lower variance
         }
         if simplify:
             result = ComparisonReport._simplify_result(result)
