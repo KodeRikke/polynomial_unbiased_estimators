@@ -68,25 +68,27 @@ class LaplaceNoiseModel(NoiseModel):
         self.delta = sp.sympify(delta)
         self.epsilon = sp.sympify(epsilon)
 
-    """ Helper method to calculate the k-th central moment of the noise distribution, E[noise^k], which is used in the moment calculation.
+    """ Helper method to calculate the k-th moment of the Laplace noise distribution, E[noise^k], 
+        which is used in the central moment calculation. Because Laplace noise has mean 0, the k-th 
+        moment about zero is the same as the k-th central moment.
         Input: k is a non-negative integer representing the order of the moment
-        Output: the k-th central moment of the noise distribution, which is (delta/epsilon)^k * k! if k is even, and 0 if k is odd."""
-    def _central_moment(self, k):
+        Output: the k-th moment of the noise distribution, which is (delta/epsilon)^k * k! if k is even, and 0 if k is odd."""
+    def _moment_about_zero(self, k):
         if k % 2 == 0: # even k
             return (self.delta / self.epsilon)**k * sp.factorial(k) 
         else: # odd k
             return 0 # if not caught by caller
 
     """ Input: i is a non-negative integer representing the order of the moment, q is a variable representing the original statistic.
-        Output: the i-th moment of the noise distribution, E[(q + noise)^i], which is calculated using the binomial expansion and the central moments of the noise distribution.
+        Output: the i-th CENTRAL moment of the released statistic, E[(q + noise)^i], which is calculated using the binomial expansion and the moments of the noise distribution.
         This method implements the formular from equation (12) in the thesis prep-project.
-"""
+        It is the central moment because it is the moment of the released statistic x = q + noise, which is centered around q, as the noise has mean 0."""
     @lru_cache(maxsize=4096) # maybe set roof
     def moment(self, i, q):
         i = int(i) # for caching
         expr = 0
         for k in range(0, i + 1, 2): # only even k contributes
-            expr += sp.binomial(i, k) * q**(i - k) * self._central_moment(k)
+            expr += sp.binomial(i, k) * q**(i - k) * self._moment_about_zero(k)
         return expr
     
     """ Input: f is a polynomial function in q, x is the variable representing the observed statistic.
@@ -97,10 +99,10 @@ class LaplaceNoiseModel(NoiseModel):
         return g
     
     def clear_cache(self):
-        self.moment.cache_clear()
-    
+        self.raw_moment.cache_clear()
+
     def cache_info(self):
-        return self.moment.cache_info()
+        return self.raw_moment.cache_info()
 
 # --- Concrete Strategy GaussianNoiseModel ---
 class GaussianNoiseModel(NoiseModel):
@@ -208,23 +210,30 @@ class ComparisonReport:
         mean_unbiased = system.analyzer.mean(g_unbiased)
         variance_naive = system.analyzer.variance(g_naive)
         variance_unbiased = system.analyzer.variance(g_unbiased)
+        mse_naive = system.analyzer.mse(g_naive, f)
+        mse_unbiased = system.analyzer.mse(g_unbiased, f)
 
         result = {
             "polynomial": f,
             "naive": {
                 "estimator": g_naive,
                 "mean": mean_naive,
-                "variance": variance_naive
+                "variance": variance_naive,
+                "mse": mse_naive
             },
             "unbiased": {
                 "estimator": g_unbiased,
                 "mean": mean_unbiased,
-                "variance": variance_unbiased
+                "variance": variance_unbiased,
+                "mse": mse_unbiased
             },
             "mean_gap": mean_unbiased - mean_naive,
             "variance_gap": variance_unbiased - variance_naive, # if NEGATIVE, then unbiased has lower variance
             "variance_ratio": sp.oo if variance_naive.is_zero else variance_unbiased / variance_naive, # if LESS than 1, then unbiased has lower variance 
-            "relative_variance": sp.Integer(0) if variance_naive.is_zero else (variance_unbiased - variance_naive) / variance_naive # if negative, then unbiased has lower variance
+            "variance_relative": sp.Integer(0) if variance_naive.is_zero else (variance_unbiased - variance_naive) / variance_naive, # if negative, then unbiased has lower variance
+            "mse_gap": mse_unbiased - mse_naive,
+            "mse_ratio": sp.oo if mse_naive.is_zero else mse_unbiased / mse_naive,
+            "mse_relative": sp.Integer(0) if mse_naive.is_zero else (mse_unbiased - mse_naive) / mse_naive,
         }
         if simplify:
             result = ComparisonReport._simplify_result(result)
@@ -332,3 +341,13 @@ class EstimatorAnalyzer:
         Eg = self.mean(estimator)
         Eg2 = self.mean(sp.expand(estimator**2))
         return  Eg2 - Eg**2 # leave "simplify" to higher level classes
+    
+    def mse(self, estimator, true_value):
+        """ Input: estimator is a polynomial function in x (x= q+noise), 
+        true_value is a polynomial function in q.
+        Output: E[(estimator - true_value)^2], which is calculated using the mean method."""
+        estimator = sp.sympify(estimator)
+        true_value = sp.sympify(true_value)
+
+        err = sp.expand(estimator - true_value)
+        return self.mean(sp.expand(err**2))
