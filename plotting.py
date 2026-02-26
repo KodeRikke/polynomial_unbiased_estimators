@@ -54,7 +54,7 @@ def main():
             if metric == "mse_ratio" or metric == "mse_relative":
                 path = f"{path_for_plots}/mse"
             else:
-                path = f"{path_for_plots}/var"
+                path = f"{path_for_plots}/variance"
             for n in chebyshev_degrees:
                 for Delta_value in Delta_values:
                     print(f"Evaluating {metric} for Chebyshev degree {n}...")
@@ -84,7 +84,7 @@ def main():
             if metric == "mse_ratio" or metric == "mse_relative":
                 path = f"{path_for_plots}/mse"
             else:
-                path = f"{path_for_plots}/var"
+                path = f"{path_for_plots}/variance"
             for q_val in q_values:
                 for Delta_value in Delta_values:
                     print(f"Evaluating {metric} for q = {q_val}...")
