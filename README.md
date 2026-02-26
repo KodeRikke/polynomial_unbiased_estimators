@@ -3,6 +3,7 @@ To be continued...
 Dependencies: 
 Sympy, functools, 
 numpy, matplotlib, 
+os
 
 To Do: 
 1. Write README
