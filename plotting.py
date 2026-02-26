@@ -1,5 +1,6 @@
 import sympy as sp
 import numpy as np
+import os
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -8,7 +9,7 @@ import matplotlib.pyplot as plt
 from dp_estimators import EstimatorSystem, LaplaceNoiseModel
 
 """
-This file contains code for plotting the variance gap of the naive and unbiased estimators.
+This file contains code for plotting the variance and MSE gap of the naive and unbiased estimators.
 It is done in the following ways:
 1. A plot for each degree of Chebychev polynomials, d in {chebyshev_degrees}, we have:
     - x-axis: epsilon 
@@ -26,19 +27,20 @@ It is done in the following ways:
     - x-axis: epsilon 
     - y-axis: the relative variance, i.e. ((var. of unbiased estimator) - (var. of naive estimator)) / (var. of naive estimator)
     - a line for each Chebyshev polynomial with d in {chebyshev_degrees}
+
+Same for MSE ratio and relative MSE, but in separate plots.
 """
 def main():
     # Define the values of q and the degrees of Chebychev polynomials:
     # This is the only place you should change values!
-    #q_values = [-1, -sp.Rational(3,4), -sp.Rational(1,2), -sp.Rational(1,4), 0, sp.Rational(1,2), sp.Rational(3,4), 1]
     q_values = [0, sp.Rational(1,4), sp.Rational(1,2), sp.Rational(3,4), 1]
-    chebyshev_degrees = [3, 6, 9] #, 10, 12]
-    eps_range = (0.1, 10) # range of epsilon values for plotting
+    chebyshev_degrees = [2, 3, 6, 9] 
+    eps_range = (0.1, 5) # range of epsilon values for plotting
     Delta_values = [0.5, 1, 2] # fix Delta for plotting
 
-    which = ["variance_ratio", "relative_variance"] # which metric to plot
+    which = ["variance_ratio", "variance_relative", "mse_ratio", "mse_relative"] #  # which metric to plot
     path_for_plots = "plots" # path to save the plots
-    both = "by_degree" # either "both", "by_degree" or "by_q" to control which plots to create
+    both = "both" # either "both", "by_degree" or "by_q" to control which plots to create
 
 # -----------------------------------------------------------------------------------------------------------------------
     # Create the plot data
@@ -49,6 +51,10 @@ def main():
         by_degree_plots = {}
         # Create the plots for each degree of Chebyshev polynomials:
         for metric in which:
+            if metric == "mse_ratio" or metric == "mse_relative":
+                path = f"{path_for_plots}/mse"
+            else:
+                path = f"{path_for_plots}/var"
             for n in chebyshev_degrees:
                 for Delta_value in Delta_values:
                     print(f"Evaluating {metric} for Chebyshev degree {n}...")
@@ -68,13 +74,17 @@ def main():
                         x_grid=eps_grid,
                         y_data=by_degree_plots[metric][n],
                         title=f"{metric.replace('_', ' ').title()} for Chebyshev Degree {n}, $\\Delta$ = {Delta_value}",
-                        path=path_for_plots
+                        path=path
                     )
     
     if both in ("both", "by_q"):
         by_q_plots = {}
         # Create the plots for each value of q:
         for metric in which:
+            if metric == "mse_ratio" or metric == "mse_relative":
+                path = f"{path_for_plots}/mse"
+            else:
+                path = f"{path_for_plots}/var"
             for q_val in q_values:
                 for Delta_value in Delta_values:
                     print(f"Evaluating {metric} for q = {q_val}...")
@@ -93,7 +103,7 @@ def main():
                         x_grid=eps_grid,
                         y_data=by_q_plots[metric][q_val],
                         title=f"{metric.replace('_', ' ').title()} for q = {q_val}, $\\Delta$ = {Delta_value}",
-                        path=path_for_plots
+                        path=path
                     )
     
 def build_system():
@@ -131,14 +141,24 @@ def substitute_q(reports_degree, q_symbol, q_value):
         #variance_unbiased = report["unbiased"]["variance"]
         #variance_gap = report["variance_gap"]
         variance_ratio = report["variance_ratio"]
-        relative_variance = report["relative_variance"]
+        variance_relative = report["variance_relative"]
+        #mse_naive = report["naive"]["mse"]
+        #mse_unbiased = report["unbiased"]["mse"]
+        #mse_gap = report["mse_gap"]
+        mse_ratio = report["mse_ratio"]
+        mse_relative = report["mse_relative"]
 
         subs[n] = {
             #"variance_naive": variance_naive.subs(q_symbol, q_value),
             #"variance_unbiased": variance_unbiased.subs(q_symbol, q_value),
             #"variance_gap": variance_gap.subs(q_symbol, q_value),
             "variance_ratio": variance_ratio.subs(q_symbol, q_value),
-            "relative_variance": relative_variance.subs(q_symbol, q_value)
+            "variance_relative": variance_relative.subs(q_symbol, q_value),
+            #"mse_naive": mse_naive.subs(q_symbol, q_value),
+            #"mse_unbiased": mse_unbiased.subs(q_symbol, q_value),
+            #"mse_gap": mse_gap.subs(q_symbol, q_value),
+            "mse_ratio": mse_ratio.subs(q_symbol, q_value),
+            "mse_relative": mse_relative.subs(q_symbol, q_value)
         }
     return subs
 
@@ -173,7 +193,7 @@ def eval_for_fixed_degree(curves_by_q, q_symbol, q_values, base_subs, epsilon_sy
         subs = dict(base_subs)   # copy
         subs[q_symbol] = q_val
         y = eval_over_epsilon(expr, epsilon_symbol, eps_grid, subs)
-        out[str(q_val)] = y   # label as string for legend
+        out[f"q = {str(q_val)}"] = y   # label as string for legend
     return out
 
 def eval_for_fixed_q(curves_by_degree, degree_values, base_subs, epsilon_symbol, eps_grid, which_metric="variance_ratio"):
@@ -197,12 +217,12 @@ def plot(x_label, y_label, x_grid, y_data, title=None, path=None):
         # x-axis the unbiased estimator has lower variance 
         # (if variance ratio < 1) or higher variance (if variance ratio > 1)
         # same with the relative variance plot, but the threshold is 0 instead of 1
-        if y_label == "Variance Ratio":
+        if y_label == "Variance Ratio" or y_label == "Mse Ratio":
             threshold = 1
             plt.axhline(y=threshold, color='black', linestyle='--', linewidth=1)
             plt.text(x_grid[len(x_grid)//23], threshold*1.05, 'Naive has lower variance', color='black', fontsize=9)
             plt.text(x_grid[len(x_grid)//23], threshold*0.95, 'Unbiased has lower variance', color='black', fontsize=9)
-        elif y_label == "Relative Variance":
+        elif y_label == "Relative Variance" or y_label == "Relative Mse":
             threshold = 0
             plt.axhline(y=threshold, color='black', linestyle='--', linewidth=1)
             plt.text(x_grid[len(x_grid)//23], 0.05, 'Naive has lower variance', color='black', fontsize=9)
@@ -214,8 +234,12 @@ def plot(x_label, y_label, x_grid, y_data, title=None, path=None):
         plt.title(title)
     plt.legend()
     plt.grid()
+
+    # create path if it doesn't exist
+    if path and not os.path.exists(path):
+        os.makedirs(path)
     plt.savefig(
-        f"{path}/plot_{title.replace('$', '').replace('\\', '').replace('=', '').replace(',', '').replace(' ', '_').replace('Variance', 'Var').replace('Chebyshev_Degree', 'Cheb_D').replace('/', 'over')}.png", 
+        f"{path}/{title.replace('$', '').replace('\\', '').replace('=', '').replace(',', '').replace(' ', '_').replace('Variance', 'Var').replace('Chebyshev_Degree', 'Cheb_D').replace('/', 'over')}.png", 
         dpi=200, 
         bbox_inches='tight'
     )
