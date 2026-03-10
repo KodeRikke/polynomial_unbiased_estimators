@@ -210,8 +210,8 @@ class ComparisonReport:
         mean_unbiased = system.analyzer.mean(g_unbiased)
         variance_naive = system.analyzer.variance(g_naive)
         variance_unbiased = system.analyzer.variance(g_unbiased)
-        mse_naive = system.analyzer.mse(g_naive, f)
-        mse_unbiased = system.analyzer.mse(g_unbiased, f)
+        mse_naive = system.analyzer.mse_of_estimator(g_naive, f)
+        mse_unbiased = system.analyzer.mse_of_estimator(g_unbiased, f)
 
         result = {
             "polynomial": f,
@@ -342,12 +342,29 @@ class EstimatorAnalyzer:
         Eg2 = self.mean(sp.expand(estimator**2))
         return  Eg2 - Eg**2 # leave "simplify" to higher level classes
     
-    def mse(self, estimator, true_value):
-        """ Input: estimator is a polynomial function in x (x= q+noise), 
-        true_value is a polynomial function in q.
-        Output: E[(estimator - true_value)^2], which is calculated using the mean method."""
-        estimator = sp.sympify(estimator)
-        true_value = sp.sympify(true_value)
+    def mse_of_estimator(self, estimator, target_statistic):
+        """The Mean Squared Error (MSE) of the estimator, depending on the unknown target statistic.
+        Thus this is an a priori property of the estimator, as it depends on the true value of the statistic, which is unknown at the time of estimation.
+        For f(q) as the target statistic and g(x) as the estimator, it is calculated as:
+        E[(g(x) - f(q))^2], or 
+        Var_[q](x) + Bias(x,f(q))^2.
 
-        err = sp.expand(estimator - true_value)
-        return self.mean(sp.expand(err**2))
+        Input:
+            estimator: a polynomial function in x representing the estimator
+            target_statistic: a variable representing the true statistic, which can be f(q) for some polynomial f, or just q itself.
+        Output: the MSE of the estimator, which is calculated using the variance and mean methods."""
+        estimator = sp.sympify(estimator)
+        target_statistic = sp.sympify(target_statistic)
+
+        mse_direct = self.mean(sp.expand((estimator - target_statistic)**2))
+
+        Eg = self.mean(estimator)
+        Eg2 = self.mean(sp.expand(estimator**2))
+        bias = Eg -target_statistic
+        variance = Eg2 - Eg**2
+        mse = sp.expand(variance + bias**2)
+
+        check = sp.simplify(sp.expand(mse - mse_direct))
+        if check != 0:
+            raise ValueError(f"MSE decomposition check failed: {check}")
+        return mse
