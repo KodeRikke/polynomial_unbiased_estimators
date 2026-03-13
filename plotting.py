@@ -43,7 +43,7 @@ def main():
     both = "both" # either "both", "by_degree" or "by_q" to control which plots to create
 
 # -----------------------------------------------------------------------------------------------------------------------
-    # Create the plot data
+    # Create the plot data$
     data = create_plot_data(q_values, chebyshev_degrees)
     eps_grid = np.linspace(start=eps_range[0], stop=eps_range[1], num=300) # grid of epsilon values for plotting
 
