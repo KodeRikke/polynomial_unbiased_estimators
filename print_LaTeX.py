@@ -13,7 +13,12 @@ Parameters:
 - title: An optional title for the document. If not provided, the output stem will be used as the title.
 """
 def build_latex_document(latex_body: str, output_stem: str, *, title: str | None = None):
-    tex_path = Path(output_stem).with_suffix(".tex")
+
+    # If the folder "reports" does not exist, create it
+    reports_folder = Path("reports")
+    reports_folder.mkdir(exist_ok=True)
+    # Create the .tex file path from the output stem and the reports folder
+    tex_path = reports_folder / Path(output_stem).with_suffix(".tex")
 
     # Note that for using breqn, some dependencies might be off, needed to run:
     # sudo apt install texlive-latex-recommended
