@@ -4,7 +4,10 @@ To be continued...
 SymPy
 
 dp_estimators.py:
-    functools.lru_cache, typing.Union
+    typing.Union
+
+noise_models.py:
+    functools.lru_cache
 
 print_LaTeX.py:
     subprocess, pathlib.Path
