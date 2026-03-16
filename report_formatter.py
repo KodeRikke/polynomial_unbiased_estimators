@@ -5,17 +5,27 @@ __all__ = ["ReportFormatter"]
 sp.init_printing(use_unicode=True)
 
 class ReportFormatter:
+    """
+    The ReportFormatter class is responsible for formatting the results of the estimation system for presentation in both terminal and LaTeX formats.
+    It takes the noise parameters Delta (the sensitivity of the query) and epsilon (the privacy budget / noise scale) as input,
+    and defines methods to normalize expressions, render summaries in the terminal, and render LaTeX reports.
+    The normalization process involves substituting Delta with a new symbol beta, which represents the ratio of Delta to epsilon, 
+    to make the expressions more interpretable and suitable for presentation. The class also includes methods to format expressions 
+    for inline display and to render the summary of the estimation results in a structured format for both terminal and LaTeX outputs.
+    """
     def __init__(self, delta, epsilon): #ratio_name="ratio"):
         self.Delta = sp.sympify(delta)
         self.epsilon = sp.sympify(epsilon)
         self.beta = sp.Symbol("beta", real=True, positive=True)  # define a new symbol beta for noise scale
 
-    """The intention of this method is to take a SymPy expression and return a normalized version of it, 
-    where the normalization depends on the specified notation. The notations allow for different ways of 
-    grouping and simplifying the expression, particularly in terms of how the noise parameters 
-    Δ and ε are represented. This is useful for making the output more interpretable and suitable 
-    for presentation in reports or papers.
-    OBS!!! It is NOT working good enough yet!!!"""
+    """
+    The normalize method takes a SymPy expression and substitutes Delta with beta*epsilon, where beta is the ratio of Delta to epsilon.
+    This normalization process simplifies the expressions and makes them more interpretable, especially when presenting results in the terminal or in LaTeX.
+    The method also expands and collects terms by beta to further simplify the expression.
+
+    Input: expression is a SymPy expression that may contain Delta and epsilon.
+    Output: a normalized SymPy expression where Delta is replaced by beta*epsilon, and the expression is expanded and collected by beta for better readability.
+    """
     def normalize(self, expression: sp.Expr) -> sp.Expr:
         if expression is None: 
             return expression # nothing to normalize
@@ -27,6 +37,15 @@ class ReportFormatter:
         expr_beta = sp.factor_terms(expr_beta)  # factor common terms
         return expr_beta
     
+    """
+    The compact method takes a SymPy expression and applies a series of transformations to make it more concise and suitable for display, especially in LaTeX reports.
+    It first normalizes the expression using the normalize method, and then applies additional simplification techniques such as 
+    factoring common terms, collecting by beta, and canceling common factors if the expression is a rational function.
+    Whether to appy the compat method is optional, deending on the context. For terminal display, this might not be necessary. 
+
+    Input: expression is a SymPy expression that may contain Delta and epsilon.
+    Output: a compacted SymPy expression that is normalized and simplified for better readability in presentations, especially in LaTeX reports.
+    """
     def compact(self, expression: sp.Expr) -> sp.Expr:
         expr = self.normalize(expression)
 
@@ -37,9 +56,28 @@ class ReportFormatter:
         return expr
     
 #------------------------------------ For printing summary in terminal -----------------------------------------------
+    """
+    The _line method is a helper function that formats a single line of output for the terminal display, aligning the label and the expression for better readability.
+    
+    Input: 
+    label: a string representing the label for the line (e.g., "estimator", "mean", "variance", etc.)
+    expr: a string representation of the expression to be displayed next to the label.
+    Output: a formatted string that aligns the label and the expression in a structured way for terminal display.
+    """
     def _line(self, label, expr):
         return f"  {label:<10}= {expr}"
 
+    """
+    The _format_inline method takes a SymPy expression and formats it as a string for inline display in the terminal, with options for notation and compact formatting.
+    It first normalizes the expression using the normalize method (or applies compact formatting if specified), and then substitutes beta back with Delta/epsilon if the "grouped" notation is selected for better readability in the terminal.
+    Finally, it converts the expression to a string using sp.sstr for a more compact representation suitable for terminal display.
+
+    Input:
+    expr: a SymPy expression to be formatted for inline display.
+    notation: a string indicating the notation to use for formatting the expression, either "beta" (where beta is the ratio of Delta to epsilon) or "grouped" (where expressions are grouped by beta but beta is not substituted back to Delta/epsilon).
+    compact: a boolean indicating whether to apply compact formatting to the expression for a more concise display.
+    Output: a string representation of the expression formatted for inline display in the terminal.
+    """
     def _format_inline(self, expr, notation="beta", compact=False):
 
         # For display we sometimes want to keep the 
@@ -54,6 +92,18 @@ class ReportFormatter:
             expr = expr.subs(self.beta, self.Delta / self.epsilon)
         return sp.sstr(expr)
 
+    """
+    The render_summary method takes a report dictionary containing the results of the estimation system and formats it into a structured string for terminal display.
+    It uses the _format_inline method to format each expression in the report according to the specified notation (either "beta" or "grouped") and whether to apply compact formatting.
+    The method organizes the output into sections for the polynomial, the naive estimator, the unbiased estimator, and a comparison of the mean, variance, and MSE gaps between the two estimators. 
+    The output is designed to be clear and easy to read in the terminal, with aligned labels and values.
+
+    Input:
+    report: a dictionary containing the results of the estimation system, including the polynomial, the naive estimator, the unbiased estimator, and the gaps in mean, variance, and MSE.
+    notation: a string indicating the notation to use for formatting the expressions, either "beta" (where beta is the ratio of Delta to epsilon) or "grouped" (where expressions are grouped by beta but beta is not substituted back to Delta/epsilon).
+    compact: a boolean indicating whether to apply compact formatting to the expressions for a more concise display.
+    Output: a formatted string that summarizes the results of the estimation system in a structured and readable format for terminal display.
+    """
     def render_summary(self, report, notation="beta", compact=False):
         f = self._format_inline(report["polynomial"], notation=notation, compact=compact)
 
@@ -99,6 +149,19 @@ class ReportFormatter:
         return "\n".join(lines)
     
 # -------------------------------------------------- For rendering to LaTeX --------------------------------------------------------
+
+    """
+    The _latex_expr method is a helper function that takes a SymPy expression and formats it as a LaTeX string for rendering in the LaTeX report.
+    It first normalizes the expression using the normalize method (or applies compact formatting if specified),
+    and then substitutes beta back with Delta/epsilon if the "grouped" notation is selected. 
+    Finally, it converts the expression to a LaTeX string using sp.latex, with an option to specify custom symbol names for better readability in the LaTeX output.
+
+    Input:
+    expr: a SymPy expression to be formatted for LaTeX rendering.
+    notation: a string indicating the notation to use for formatting the expression, either "beta" (where beta is the ratio of Delta to epsilon) or "grouped" (where expressions are grouped by beta but beta is not substituted back to Delta/epsilon).
+    compact: a boolean indicating whether to apply compact formatting to the expression for a more concise display in the LaTeX report.
+    Output: a string representation of the expression formatted for LaTeX rendering in the report.
+    """
     def _latex_expr(self, expr, notation="grouped", compact=False):
         if compact:
             expr = self.compact(expr)
@@ -113,6 +176,18 @@ class ReportFormatter:
             )
         return sp.latex(expr)
 
+    """
+    The render_latex method takes a report dictionary containing the results of the estimation system and formats it into a structured LaTeX string for rendering in a LaTeX report.
+    It uses the _latex_expr method to format each expression in the report according to the specified notation (either "beta" or "grouped") and whether to apply compact formatting.
+    The method organizes the output into sections for the polynomial, the naive estimator, the unbiased estimator, and a comparison of the mean, variance, and MSE gaps between the two estimators. 
+    The output is designed to be clear and well-structured for rendering in a LaTeX document, with appropriate use of math environments and formatting for mathematical expressions.
+
+    Input:
+    report: a dictionary containing the results of the estimation system, including the polynomial, the naive estimator, the unbiased estimator, and the gaps in mean, variance, and MSE.
+    notation: a string indicating the notation to use for formatting the expressions, either "beta" (where beta is the ratio of Delta to epsilon) or "grouped" (where expressions are grouped by beta but beta is not substituted back to Delta/epsilon).
+    compact: a boolean indicating whether to apply compact formatting to the expressions for a more concise display in the LaTeX report.
+    Output: a formatted string that summarizes the results of the estimation system in a structured and well-formatted way for rendering in a LaTeX document. 
+    """
     def render_latex(self, report, notation="ratio", compact=False):
         f = self._latex_expr(report["polynomial"], notation=notation, compact=compact)
 
