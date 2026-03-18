@@ -24,6 +24,7 @@ To Do:
 5. When printing plots (Cheb), the text indicating "unbiased is lower" vs "naive is lower" is hardcoded on the y-axis and might end up weird places.
 6. Maybe make a clean script to remove all tex, aux, pdf files (and plots?) - the folder gets messy.
 7. Create a folder for scripts, so the main modules are unbothered.
+8. Plot for each value of epsilon and then value of q in the x-axis (instead of opposite)
 
 Observations:
 1. When using the library, remember that SymPy uses SYMBOLIC expressions and functions. Therefor the symbols needs to be defined as "symbolic", i.e.:
