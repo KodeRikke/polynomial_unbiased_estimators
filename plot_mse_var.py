@@ -46,6 +46,7 @@ def main():
     # - "degree_by_q" means that for each value of q, we plot the curves for different degrees of Chebyshev polynomials in the same plot, with epsilon on the x-axis.
     # - "epsilion_by_degree" means that for each degree of Chebyshev polynomials, we plot the curves for different values of epsilon in the same plot, with q on the x-axis.
     each_plot = [
+
         "q_by_degree", 
         "degree_by_q", 
         "epsilon_by_degree"
@@ -291,7 +292,7 @@ def curves_epsilon_for_fixed_degree(
 # Plotting
 # ----------------------------------------------------------------------
 
-def add_reference_line(x_grid, y_label):
+def add_reference_line(y_label, ax=None):
     """
     FUnction to add a reference line to the plot, indicating the threshold 
     for the metric being plotted. For the ratio metrics, the threshold is 1, 
@@ -306,19 +307,62 @@ def add_reference_line(x_grid, y_label):
     Output:
     - None 
     """
+        # check if only one of the text-boxes stays within the y-limits of the plot
+        # (hence the threshold line is either close to the top or bottom of the plot, 
+        # or not in the plot at all, and only one of the two sides of the line is visible), 
+        # in this case, add only the text-box, that corresponds to the side of the line that is visible, 
+        # and let plt decide where to place it (so it won't be cut off by the limits of the plot).
+    if ax is None:
+        ax = plt.gca()
+    
     if y_label in {"Variance Ratio", "MSE Ratio"}:
-        threshold = 1
-        plt.axhline(y=threshold, color="black", linestyle="--", linewidth=1)
-        x_text = x_grid[max(1, len(x_grid) // 20)]
-        plt.text(x_text, threshold * 1.05, "Naive lower", color="black", fontsize=9)
-        plt.text(x_text, threshold * 0.95, "Unbiased lower", color="black", fontsize=9)
+        threshold = 1.0
+    elif y_label in {"Relative Variance", "Relative MSE", "Variance Relative", "MSE Relative"}:
+        threshold = 0.0
+    else:
+        return
 
-    elif y_label in {"Relative Variance", "Relative MSE"}:
-        threshold = 0
-        plt.axhline(y=threshold, color="black", linestyle="--", linewidth=1)
-        x_text = x_grid[max(1, len(x_grid) // 20)]
-        plt.text(x_text, 0.05, "Naive lower", color="black", fontsize=9)
-        plt.text(x_text, -0.05, "Unbiased lower", color="black", fontsize=9)
+    ax.axhline(threshold, color="black", linestyle="--", linewidth=1)
+    ymin, ymax = ax.get_ylim()
+    x_frac = 0.08
+
+    # threshold position measured in the visible axis box
+    y_frac = (threshold - ymin) / (ymax - ymin)
+
+    # threshold below visible area
+    if y_frac < 0:
+        ax.text(
+            x_frac, 0.15, "Naive lower",
+            transform=ax.transAxes,
+            ha="left", va="bottom", fontsize=9, color="black"
+        )
+        return
+
+    # threshold above visible area
+    if y_frac > 1:
+        ax.text(
+            x_frac, 0.85, "Unbiased lower",
+            transform=ax.transAxes,
+            ha="left", va="top", fontsize=9, color="black"
+        )
+        return
+
+    # threshold is visible: add only labels that fit
+    pad_frac = 0.04
+
+    if y_frac + 2*pad_frac < 1:
+        ax.text(
+            x_frac, y_frac + pad_frac, "Naive lower",
+            transform=ax.transAxes,
+            ha="left", va="bottom", fontsize=9, color="black"
+        )
+
+    if y_frac - 2*pad_frac > 0:
+        ax.text(
+            x_frac, y_frac - pad_frac, "Unbiased lower",
+            transform=ax.transAxes,
+            ha="left", va="top", fontsize=9, color="black"
+        )
 
 def save_filename(text):
     """
@@ -341,9 +385,10 @@ def plot_curves(x_label, y_label, x_grid, y_data, title=None, path=None):
     Plot the curves for the given x and y data.
     """
     plt.figure(figsize=(10, 6))
-    add_reference_line(x_grid, y_label)
     for label, y_values in y_data.items():
         plt.plot(x_grid, y_values, label=label)
+    add_reference_line(y_label)
+
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.title(title)
