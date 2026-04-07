@@ -111,6 +111,7 @@ class ReportFormatter:
         n_mean = self._format_inline(report["naive"]["mean"], notation=notation, compact=compact)
         n_var = self._format_inline(report["naive"]["variance"], notation=notation, compact=compact)
         n_mse = self._format_inline(report["naive"]["mse"], notation=notation, compact=compact)
+        n_bias = self._format_inline(report["naive"]["bias"], notation=notation, compact=compact)
 
         u_est = self._format_inline(report["unbiased"]["estimator"], notation=notation, compact=compact)
         u_mean = self._format_inline(report["unbiased"]["mean"], notation=notation, compact=compact)
@@ -120,6 +121,7 @@ class ReportFormatter:
         mean_gap = self._format_inline(report["mean_gap"], notation=notation, compact=compact)
         var_gap = self._format_inline(report["variance_gap"], notation=notation, compact=compact)
         mse_gap = self._format_inline(report["mse_gap"], notation=notation, compact=compact)
+        n_bias_squared = self._format_inline(report["bias_naive_squared"], notation=notation, compact=compact)
 
         lines = [
             f"f(q) = {f}",
@@ -129,6 +131,7 @@ class ReportFormatter:
             self._line("mean", n_mean),
             self._line("variance", n_var),
             self._line("mse", n_mse),
+            self._line("bias", n_bias),
             "",
             "Unbiased:",
             self._line("estimator", u_est),
@@ -140,6 +143,7 @@ class ReportFormatter:
             self._line("mean_gap", mean_gap),
             self._line("var_gap", var_gap),
             self._line("mse_gap", mse_gap),
+            self._line("bias_naive_squared", n_bias_squared),
         ]
 
         if notation == "beta":
@@ -195,6 +199,7 @@ class ReportFormatter:
         n_mean = self._latex_expr(report["naive"]["mean"], notation=notation, compact=compact)
         n_var = self._latex_expr(report["naive"]["variance"], notation=notation, compact=compact)
         n_mse = self._latex_expr(report["naive"]["mse"], notation=notation, compact=compact)
+        n_bias = self._latex_expr(report["naive"]["bias"], notation=notation, compact=compact)
 
         u_est = self._latex_expr(report["unbiased"]["estimator"], notation=notation, compact=compact)
         u_mean = self._latex_expr(report["unbiased"]["mean"], notation=notation, compact=compact)
@@ -204,6 +209,7 @@ class ReportFormatter:
         mean_gap = self._latex_expr(report["mean_gap"], notation=notation, compact=compact)
         var_gap = self._latex_expr(report["variance_gap"], notation=notation, compact=compact)
         mse_gap = self._latex_expr(report["mse_gap"], notation=notation, compact=compact)
+        n_bias_squared = self._latex_expr(report["bias_naive_squared"], notation=notation, compact=compact)
 
         lines = []
 
@@ -232,6 +238,9 @@ class ReportFormatter:
             r"\begin{dmath*}",
             rf"\operatorname{{MSE}}(g_{{\mathrm{{naive}}}}) = {n_mse}",
             r"\end{dmath*}",
+            r"\begin{dmath*}",
+            rf"\operatorname{{Bias}}(g_{{\mathrm{{naive}}}}) = {n_bias}",
+            r"\end{dmath*}",
 
             r"\section*{Unbiased}",
             r"\begin{dmath*}",
@@ -256,6 +265,9 @@ class ReportFormatter:
             r"\end{dmath*}",
             r"\begin{dmath*}",
             rf"\text{{MSE gap}} = {mse_gap}",
+            r"\end{dmath*}",
+            r"\begin{dmath*}",
+            rf"\operatorname{{Bias}}(g_{{\mathrm{{naive}}}})^2 = {n_bias_squared}",
             r"\end{dmath*}",
         ]
 

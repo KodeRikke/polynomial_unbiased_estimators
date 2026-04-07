@@ -173,13 +173,16 @@ class ComparisonReport:
         mse_naive = system.analyzer.mse_of_estimator(g_naive, f)
         mse_unbiased = system.analyzer.mse_of_estimator(g_unbiased, f)
 
+        bias_naive = system.analyzer.bias(g_naive, f)
+
         return {
             "polynomial": f,
             "naive": {
                 "estimator": g_naive,
                 "mean": mean_naive,
                 "variance": variance_naive,
-                "mse": mse_naive
+                "mse": mse_naive,
+                "bias": bias_naive
             },
             "unbiased": {
                 "estimator": g_unbiased,
@@ -194,6 +197,7 @@ class ComparisonReport:
             "mse_gap": mse_unbiased - mse_naive,
             "mse_ratio": sp.oo if mse_naive.is_zero else mse_unbiased / mse_naive,
             "mse_relative": sp.Integer(0) if mse_naive.is_zero else (mse_unbiased - mse_naive) / mse_naive,
+            "bias_naive_squared": bias_naive**2
         }
 
 # --- Context EstimatorContext ---
@@ -315,7 +319,7 @@ class EstimatorAnalyzer:
     Input:
         estimator: a polynomial function in x representing the estimator
         target_statistic: a variable representing the true statistic, which can be f(q) for some polynomial f, or just q itself.
-    Output: the MSE of the estimator, which is calculated using the variance and mean methods.
+    Output: the MSE of the estimator, which is calculated using the variance, mean and bias methods.
     """
     def mse_of_estimator(self, estimator, target_statistic):
         estimator = sp.sympify(estimator)
@@ -325,7 +329,7 @@ class EstimatorAnalyzer:
 
         Eg = self.mean(estimator)
         Eg2 = self.mean(sp.expand(estimator**2))
-        bias = Eg -target_statistic
+        bias = self.bias(estimator, target_statistic)
         variance = Eg2 - Eg**2
         mse = sp.expand(variance + bias**2)
 
@@ -333,3 +337,22 @@ class EstimatorAnalyzer:
         if check != 0:
             raise ValueError(f"MSE decomposition check failed: {check}")
         return mse
+    
+    """
+    The Bias of the estimator, depending on the unknown target statistic.
+    Thus this is an a priori property of the estimator, as it depends on the true value of the statistic, which is unknown at the time of estimation.
+    For f(q) as the target statisti and h(x) as the estimator:
+    Bias(h(x),f(q)) = E[h(x)] - f(q).
+    
+    Input:
+        estimator: a polynomial function in x representing the estimator (often only the naive estimator).
+        target_statistic: a variable representing the true statistic, which can be f(q) for some polynomial f, or just q itself.
+    Output: the bias of the estimator, which is calculated using the mean method.
+    """
+    def bias(self, estimator, target_statistic):
+        estimator = sp.sympify(estimator)
+        target_statistic = sp.sympify(target_statistic)
+
+        Eg = self.mean(estimator)
+        bias = sp.expand(Eg - target_statistic)
+        return bias

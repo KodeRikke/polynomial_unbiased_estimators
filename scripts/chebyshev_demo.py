@@ -1,4 +1,5 @@
 import sympy as sp
+
 from dp_estimators import EstimatorSystem, LaplaceNoiseModel
 
 """ THis script demonstrates how to use the EstimatorSystem to compare the variance of 

@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage{breqn}
+\allowdisplaybreaks
+\begin{document}
+\section*{Cubic Base Case Report}
+\section*{Polynomial}
+\begin{dmath*}
+f(q) = q^{3}
+\end{dmath*}
+\section*{Naive}
+\begin{dmath*}
+g_{\mathrm{naive}}(X) = X^{3}
+\end{dmath*}
+\begin{dmath*}
+\mathbb{E}[g_{\mathrm{naive}}(X)] = 6 {\frac{\Delta}{\epsilon}}^{2} q + q^{3}
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Var}(g_{\mathrm{naive}}(X)) = 720 {\frac{\Delta}{\epsilon}}^{6} + 324 {\frac{\Delta}{\epsilon}}^{4} q^{2} + 18 {\frac{\Delta}{\epsilon}}^{2} q^{4}
+\end{dmath*}
+\begin{dmath*}
+\operatorname{MSE}(g_{\mathrm{naive}}) = 720 {\frac{\Delta}{\epsilon}}^{6} + 360 {\frac{\Delta}{\epsilon}}^{4} q^{2} + 18 {\frac{\Delta}{\epsilon}}^{2} q^{4}
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Bias}(g_{\mathrm{naive}}) = 6 {\frac{\Delta}{\epsilon}}^{2} q
+\end{dmath*}
+\section*{Unbiased}
+\begin{dmath*}
+g_{\mathrm{unb}}(X) = X^{3} - 6 X {\frac{\Delta}{\epsilon}}^{2}
+\end{dmath*}
+\begin{dmath*}
+\mathbb{E}[g_{\mathrm{unb}}(X)] = q^{3}
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Var}(g_{\mathrm{unb}}(X)) = 504 {\frac{\Delta}{\epsilon}}^{6} + 252 {\frac{\Delta}{\epsilon}}^{4} q^{2} + 18 {\frac{\Delta}{\epsilon}}^{2} q^{4}
+\end{dmath*}
+\begin{dmath*}
+\operatorname{MSE}(g_{\mathrm{unb}}) = 504 {\frac{\Delta}{\epsilon}}^{6} + 252 {\frac{\Delta}{\epsilon}}^{4} q^{2} + 18 {\frac{\Delta}{\epsilon}}^{2} q^{4}
+\end{dmath*}
+\section*{Comparison}
+\begin{dmath*}
+\text{mean gap} = - 6 {\frac{\Delta}{\epsilon}}^{2} q
+\end{dmath*}
+\begin{dmath*}
+\text{variance gap} = - 216 {\frac{\Delta}{\epsilon}}^{6} - 72 {\frac{\Delta}{\epsilon}}^{4} q^{2}
+\end{dmath*}
+\begin{dmath*}
+\text{MSE gap} = - 216 {\frac{\Delta}{\epsilon}}^{6} - 108 {\frac{\Delta}{\epsilon}}^{4} q^{2}
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Bias}(g_{\mathrm{naive}})^2 = 36 {\frac{\Delta}{\epsilon}}^{4} q^{2}
+\end{dmath*}
+\end{document}
