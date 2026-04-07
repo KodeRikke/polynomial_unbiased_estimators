@@ -18,12 +18,6 @@ plot_mse_var.py:
 
 To Do: 
 -- Write README.
--- Fix TypeError: 'NegativeInfinity' object cannot be interpreted as an integer in mu in EstimatorAnalyzer (maybe not relevant).
--- Dependencies; maybe the packages for LaTeX, breqn, cause trouble, but needed for breaking expressions when compiling PDF. 
--- When printing plots (Cheb), the text indicating "unbiased is lower" vs "naive is lower" is hardcoded on the y-axis and might end up weird places.
--- Maybe make a clean script to remove all tex, aux, pdf files (and plots?) - the folder gets messy.
--- Create a folder for scripts, so the main modules are unbothered.
-
 
 Observations:
 1. When using the library, remember that SymPy uses SYMBOLIC expressions and functions. Therefor the symbols needs to be defined as "symbolic", i.e.:
@@ -34,3 +28,7 @@ Observations:
     X = sp.Symbol("X", real=True)
 
 And then later substituted with real values. 
+
+2. Dependencies; maybe the packages for LaTeX, breqn, cause trouble, but needed for breaking expressions when compiling PDF.
+
+3. Fix TypeError: 'NegativeInfinity' object cannot be interpreted as an integer in mu in EstimatorAnalyzer (maybe not relevant).
