@@ -14,7 +14,7 @@ print_LaTeX.py:
 
 plot_mse_var.py:
     numpy, os, matplotlib, pathlib.Path
---------------------------------------------------------------------
+----------------------- Dependencies --------------------------------
 
 To Do: 
 -- Write README.
