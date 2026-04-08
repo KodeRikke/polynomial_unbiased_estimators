@@ -26,6 +26,6 @@ print(summary_quadratic)
 summary_cubic_basecase = sys.summary_report(f_cubic_basecase, notation="beta")
 print(summary_cubic_basecase)
 
-sys.pdf_report(f_cubic, "cubic_report", title="Cubic Function Report", compact=True) # use compact mode for the LaTeX report, to remove paranthesis basically
-sys.pdf_report(f_quadratic, "quadratic_report", title="Quadratic Function Report", compact=True)
-sys.pdf_report(f_cubic_basecase, "cubic_basecase_report", title="Cubic Base Case Report", compact=True)
+sys.pdf_report(f_cubic, "cubic_report", title="Cubic Function Report")#, compact=True) # use compact mode for the LaTeX report, to remove paranthesis basically
+sys.pdf_report(f_quadratic, "quadratic_report", title="Quadratic Function Report")#, compact=True)
+sys.pdf_report(f_cubic_basecase, "cubic_basecase_report", title="Cubic Base Case Report")#, compact=True)
