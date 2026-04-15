@@ -18,6 +18,7 @@ plot_mse_var.py:
 
 To Do: 
 -- Write README.
+-- Write explanaintion in all scripts.
 
 Observations:
 1. When using the library, remember that SymPy uses SYMBOLIC expressions and functions. Therefor the symbols needs to be defined as "symbolic", i.e.:

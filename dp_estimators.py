@@ -132,6 +132,7 @@ class EstimatorSystem:
     It uses the class ReportFormatter from the module report_formatter and the method render_pdf for formatting the report for display in a PDF document.
 
     Input: f: a polynomial function in q,
+           output_stem: a string representing the stem of the output file name (without extension) for the PDF report,
            notation: either "beta" or "grouped", for either keeping the noise parameters as beta = Delta/epsilon  or substituting back to Delta / epsilon,
            compact: a boolean indicating whether to use compact formatting.
     Output: a formatted PDF report comparing the naive and unbiased estimators for f, suitable for inclusion in a PDF document.
@@ -170,8 +171,8 @@ class ComparisonReport:
         mean_unbiased = system.analyzer.mean(g_unbiased)
         variance_naive = system.analyzer.variance(g_naive)
         variance_unbiased = system.analyzer.variance(g_unbiased)
-        mse_naive = system.analyzer.mse_of_estimator(g_naive, f)
-        mse_unbiased = system.analyzer.mse_of_estimator(g_unbiased, f)
+        mse_naive = system.analyzer.mse(g_naive, f)
+        mse_unbiased = system.analyzer.mse(g_unbiased, f)
 
         bias_naive = system.analyzer.bias(g_naive, f)
 
@@ -321,7 +322,7 @@ class EstimatorAnalyzer:
         target_statistic: a variable representing the true statistic, which can be f(q) for some polynomial f, or just q itself.
     Output: the MSE of the estimator, which is calculated using the variance, mean and bias methods.
     """
-    def mse_of_estimator(self, estimator, target_statistic):
+    def mse(self, estimator, target_statistic):
         estimator = sp.sympify(estimator)
         target_statistic = sp.sympify(target_statistic)
 

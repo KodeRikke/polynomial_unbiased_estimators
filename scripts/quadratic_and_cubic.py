@@ -29,3 +29,8 @@ print(summary_cubic_basecase)
 sys.pdf_report(f_cubic, "cubic_report", title="Cubic Function Report")#, compact=True) # use compact mode for the LaTeX report, to remove paranthesis basically
 sys.pdf_report(f_quadratic, "quadratic_report", title="Quadratic Function Report")#, compact=True)
 sys.pdf_report(f_cubic_basecase, "cubic_basecase_report", title="Cubic Base Case Report")#, compact=True)
+
+#------------------------------------------
+# make a function of the variance gap between the unbiased and naive estimator for the cubic function, to analyze it further.
+mse_gap_cubic = sys.report.mse_gap(f_cubic)
+variance_gap_cubic = sys.variance_gap(f_cubic)
