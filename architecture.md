@@ -3,7 +3,7 @@ classDiagram
 direction LR
 
 %% The following is an UML diagram, and it can be plugged into Mermaid to se the finished diagram, in case there are some changes. 
-This is the second (or third??) draft, before adding any Gaussian Dilly Dally.
+%% This is the second (or third??) draft, before adding any Gaussian Dilly Dally.
 
 class ReportFormatter {
   +delta: sympy.Symbol
