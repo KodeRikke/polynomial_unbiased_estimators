@@ -1,6 +1,6 @@
 ```mermaid
 classDiagram
-direction LR
+direction TD
 
 %% The following is an UML diagram, and it can be plugged into Mermaid to se the finished diagram, in case there are some changes. 
 %% This is the second (or third??) draft, before adding any Gaussian Dilly Dally.
@@ -84,7 +84,7 @@ EstimatorSystem *-- EstimatorContext : owns
 EstimatorSystem *-- EstimatorAnalyzer : owns
 EstimatorSystem *-- ReportFormatter : owns
 
-ComparisonReport o-- EstimatorSystem : references %% opposite?????
+ComparisonReport o-- EstimatorSystem : references
 
 %% "Uses" relationships
 EstimatorContext ..> NoiseModel : calls unbiased_transform()
