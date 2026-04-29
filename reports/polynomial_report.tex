@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage{breqn}
+\allowdisplaybreaks
+\begin{document}
+\section*{polynomial_report}
+\section*{Polynomial}
+\begin{dmath*}
+f(q) = a q^{3} + b q^{2} + c q + d
+\end{dmath*}
+\section*{Naive}
+\begin{dmath*}
+g_{\mathrm{naive}}(X) = X^{3} a + X^{2} b + X c + d
+\end{dmath*}
+\begin{dmath*}
+\mathbb{E}[g_{\mathrm{naive}}(X)] = a q^{3} + b q^{2} + 2 {\frac{\Delta}{\epsilon}}^{2} \left(3 a q + b\right) + c q + d
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Var}(g_{\mathrm{naive}}(X)) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(360 a^{2} {\frac{\Delta}{\epsilon}}^{4} + 9 a^{2} q^{4} + 12 a b q^{3} + 6 a c q^{2} + 4 b^{2} q^{2} + 4 b c q + 2 {\frac{\Delta}{\epsilon}}^{2} \left(81 a^{2} q^{2} + 54 a b q + 12 a c + 5 b^{2}\right) + c^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{MSE}(g_{\mathrm{naive}}) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(360 a^{2} {\frac{\Delta}{\epsilon}}^{4} + 9 a^{2} q^{4} + 12 a b q^{3} + 6 a c q^{2} + 4 b^{2} q^{2} + 4 b c q + 12 {\frac{\Delta}{\epsilon}}^{2} \left(15 a^{2} q^{2} + 10 a b q + 2 a c + b^{2}\right) + c^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Bias}(g_{\mathrm{naive}}) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(3 a q + b\right)
+\end{dmath*}
+\section*{Unbiased}
+\begin{dmath*}
+g_{\mathrm{unb}}(X) = X^{3} a + X^{2} b + X c - 2 {\frac{\Delta}{\epsilon}}^{2} \left(3 X a + b\right) + d
+\end{dmath*}
+\begin{dmath*}
+\mathbb{E}[g_{\mathrm{unb}}(X)] = a q^{3} + b q^{2} + c q + d
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Var}(g_{\mathrm{unb}}(X)) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(252 a^{2} {\frac{\Delta}{\epsilon}}^{4} + 9 a^{2} q^{4} + 12 a b q^{3} + 6 a c q^{2} + 4 b^{2} q^{2} + 4 b c q + 2 {\frac{\Delta}{\epsilon}}^{2} \left(63 a^{2} q^{2} + 42 a b q + 6 a c + 5 b^{2}\right) + c^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{MSE}(g_{\mathrm{unb}}) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(252 a^{2} {\frac{\Delta}{\epsilon}}^{4} + 9 a^{2} q^{4} + 12 a b q^{3} + 6 a c q^{2} + 4 b^{2} q^{2} + 4 b c q + 2 {\frac{\Delta}{\epsilon}}^{2} \left(63 a^{2} q^{2} + 42 a b q + 6 a c + 5 b^{2}\right) + c^{2}\right)
+\end{dmath*}
+\section*{Comparison}
+\begin{dmath*}
+\text{mean gap} = - 2 {\frac{\Delta}{\epsilon}}^{2} \left(3 a q + b\right)
+\end{dmath*}
+\begin{dmath*}
+\text{variance gap} = - 24 a {\frac{\Delta}{\epsilon}}^{4} \left(9 a {\frac{\Delta}{\epsilon}}^{2} + 3 a q^{2} + 2 b q + c\right)
+\end{dmath*}
+\begin{dmath*}
+\text{MSE gap} = - 4 {\frac{\Delta}{\epsilon}}^{4} \left(54 a^{2} {\frac{\Delta}{\epsilon}}^{2} + 27 a^{2} q^{2} + 18 a b q + 6 a c + b^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Bias}(g_{\mathrm{naive}})^2 = 4 {\frac{\Delta}{\epsilon}}^{4} \left(9 a^{2} q^{2} + 6 a b q + b^{2}\right)
+\end{dmath*}
+\end{document}
