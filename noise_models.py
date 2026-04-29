@@ -20,7 +20,9 @@ class NoiseModel:
     passing to concrete strategies s.a. Laplace Noise or Gaussian Noise.
     OBS! The noise model can only be of distributions with known moments.
     It requires the implementation of the following methods:
-        moment(n, q): calculates the n-th moment of the noise distribution given q.
+        moment(n, q): calculates the n-th raw moment of the released statistics, q + noise.
+        unbiased_transform(f, x): takes a polynomial function f in q and returns the unbiased 
+        estimator g(x) in x, s.t. E[g(q + noise)] = f(q) for the given polynomial f.
         clear_cache(): clears the cache of the moment method, if implemented with caching.
         cache_info(): returns the cache information of the moment method, if implemented with caching.
     """
@@ -28,6 +30,65 @@ class NoiseModel:
     def moment(self, n, q):
         # \mu_n(q) = E[(q + noise)^n] for x = q + noise
         raise NotImplementedError("Subclasses must implement this method")
+
+    def unbiased_transform(self, f, x):
+        return self._general_unbiased_transform(self, f, x)
+    
+    @staticmethod
+    def _general_unbiased_transform(self, f, x):
+        """"
+        The _general_unbiased_transform method is a helper-function and a 
+        general implementation of the unbiased transform for any noise model
+        with known raw moments and a polynomial function f. It guilds and 
+        solves the linear system from Calmon et al., THM 22, to find the 
+        unbiased estimator g(x) s.t. E[g(q + noise)] = f(q).
+        This is done by defining the coefficients of f as the vector b, 
+        then building the matrix M from the raw moments of the noise distribution, 
+        and finally solving the linear system M a = b 
+        for the coefficients a of the unbiased estimator g(x).
+
+        This is a general implememntation that works for any noise model
+        with known raw moments and any polynomial function f, 
+        but it is not optimized for specific noise models.
+
+        Input: 
+        - f: a polynomial function in q,
+        - x: the variable representing the observed statistic.
+        Output: the unbiased estimator g(x) = sum_i a_i x^i, s.t. E[g(x)] = f(q).
+
+        """
+        # symbolic symbols
+        q = sp.Symbol('q', real=True)
+
+        # extract coefficients and degree from f
+        poly = sp.Poly(f, x)
+        coeffs = poly.all_coeffs()
+        degree = poly.degree()
+
+        # build the linear system M a = b
+        b = sp.Matrix(coeffs)
+        M = sp.zeros(degree + 1, degree + 1)
+
+        # for each COLUMN in M
+        for i in range(degree + 1): 
+            # calculate the raw moment, E[(q + noise)^i]
+            mu = self.moment(i, q)
+            # express mu as a polynomial in q and extract coefficients from highest to lowest degree
+            mu_poly = sp.Poly(mu, q) 
+            mu_coeffs = mu_poly.all_coeffs()
+            # pad the coeffs with zero to ensure it has length degree + 1
+            mu_coeffs = [0] * (degree + 1 - len(mu_coeffs)) + mu_coeffs
+            
+            # for each ROW in M
+            for k in range(degree + 1):
+                # fill M with the coefficients of the raw moment
+                M[k, i] = mu_coeffs[k]
+
+        # solve the linear system for a
+        a = M.inv() * b
+        # build the unbiased estimator g(x) = sum_i a_i x^i
+        g = sum(a[i] * x**(degree - i) for i in range(degree + 1))
+        return sp.expand(g)
     
     def clear_cache(self):
         pass
@@ -48,12 +109,15 @@ class LaplaceNoiseModel(NoiseModel):
         self.delta = sp.sympify(delta)
         self.epsilon = sp.sympify(epsilon)
 
-    def _moment_about_zero(self, k):
+    def _noise_central_moment(self, k):
         """
-        The _moment_about_zero method is a helper method to calculate the k-th moment of
-        the Laplace noise distribution, E[noise^k], which is used in the central moment calculation.
-        Because Laplace noise has mean 0, the RAW k-th moment about zero is EQUAL to the k-th CENTRAL moment.
-    
+        _moment_about_zero(k) returns the k-th central moment of the noise.
+
+        The _noise_central_moment method is a helper method to calculate the k-th central 
+        moment of the Laplace noise distribution, E[noise^k], which is used in the 
+        raw moment calculation for the RELEASED STATISTICS, E[(q + noise)^i].
+        Because the noise has mean 0, this equals the k-th raw moment E[noise^k].    
+
         Input: k is a non-negative integer representing the order of the moment
         Output: the k-th moment of the noise distribution, which is (delta/epsilon)^k * k! if k is even, and 0 if k is odd.
         """
@@ -65,7 +129,8 @@ class LaplaceNoiseModel(NoiseModel):
     @lru_cache(maxsize=4096) # maybe set roof
     def moment(self, i, q):
         """ 
-        The  moment method calculates the i-th raw moment of the released statistic, E[(q + noise)^i], 
+        The  moment method calculates the i-th 
+        RAW moment of the RELEASED STATISTICS, E[(q + noise)^i], 
         using the binomial expansion and the moments of the noise distribution.
         It implements the formula from equation (12) in the thesis prep-project.
     
@@ -81,11 +146,15 @@ class LaplaceNoiseModel(NoiseModel):
         i = int(i) # for caching
         expr = 0
         for k in range(0, i + 1, 2): # only even k contributes
-            expr += sp.binomial(i, k) * q**(i - k) * self._moment_about_zero(k)
+            expr += sp.binomial(i, k) * q**(i - k) * self._noise_central_moment(k)
         return expr
     
     def unbiased_transform(self, f, x):
         """ 
+        This Laplace-specific implementation of the unbiased_transform method 
+        replaces the general linear system solution with the (faster)
+        closed-form solution for the unbiased estimator under Laplace noise.
+
         The unbiased_transform method takes a polynomial function f in q and returns the unbiased estimator g(x) in x,
         s.t. E[g(q + noise)] = f(q) for the given polynomial f.
 
@@ -115,11 +184,12 @@ class GaussianNoiseModel(NoiseModel):
     def __init__(self, sigma):
         self.sigma = sp.sympify(sigma)
 
-    def _moment_about_zero(self, k):
+    def _noise_central_moment(self, k):
         """
-        The _moment_about_zero method is a helper method to calculate the k-th moment of
-        the Gaussian noise distribution. The plain central moments of a Gaussian distribution 
-        with mean 0, standard deviation sigma, and for any non-negative integer k are given by:
+        The _noise_central_moment method is a helper method to calculate the k-th 
+        central moment of the Gaussian noise distribution, E[noise^k]. 
+        The plain central moments of a Gaussian distribution with mean 0, 
+        standard deviation sigma, and for any non-negative integer k are given by:
         - 0 if k is odd
         - sigma^k * (k-1)!! if k is even,
           where (k-1)!! is the double factorial of (k-1), defined as the product of all numbers
@@ -136,7 +206,8 @@ class GaussianNoiseModel(NoiseModel):
     @lru_cache(maxsize=None) # maybe set roof
     def moment(self, i, q):
         """ 
-        The  moment method calculates the i-th raw moment of the released statistic, E[(q + noise)^i], 
+        The  moment method calculates the i-th 
+        RAW moment of the RELEASED STATISTIC, E[(q + noise)^i], 
         using the binomial expansion and the moments of the noise distribution.
 
         Note that this is a raw moment, not a central moment. Since the released
@@ -151,7 +222,7 @@ class GaussianNoiseModel(NoiseModel):
         i = int(i) # for caching
         expr = 0
         for k in range(0, i + 1, 2): # only even k contributes
-            expr += sp.binomial(i, k) * q**(i - k) * self._moment_about_zero(k)
+            expr += sp.binomial(i, k) * q**(i - k) * self._noise_central_moment(k)
         return expr
 
     def clear_cache(self):
