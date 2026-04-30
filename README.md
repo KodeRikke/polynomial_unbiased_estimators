@@ -4,6 +4,7 @@ Thus the structure of this code might not live up to the professionel expectatio
 True to the heart of DIKU, some of this code has also been created while drunk.
 
 ------------------------ Dependencies ------------------------------
+
 SymPy
 
 dp_estimators.py:
@@ -18,7 +19,7 @@ print_LaTeX.py:
 plot_mse_var.py:
     numpy, os, matplotlib, pathlib.Path
 
-During implementation, the package 
+
 ----------------------- Dependencies --------------------------------
 
 When using the library, remember that SymPy uses SYMBOLIC expressions and functions. Therefor the symbols needs to be defined as "symbolic", i.e.:
