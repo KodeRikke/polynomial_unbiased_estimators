@@ -60,13 +60,21 @@ class NoiseModel:
         # symbolic symbols
         q = sp.Symbol('q', real=True)
 
-        # extract coefficients and degree from f
+        # extract degree from f
+        f = sp.sympify(f)
         poly = sp.Poly(f, x)
-        coeffs = poly.all_coeffs()
         degree = poly.degree()
 
-        # build the linear system M a = b
-        b = sp.Matrix(coeffs)
+        # extract coefficients of f(q), from highest degree to lowest degree
+        # this should hold for any polynomial, 
+        # as long as the degree is correctly extracted
+        # b[k] is coefficients of q^k
+        f_in_q = f.subs(x, q)
+        f_poly = sp.Poly(f_in_q, q)
+        b = [
+            f_poly.coeff_monomial(q**k) for k in range(degree + 1)
+        ]
+        # M[k, i] is the coefficient of q^k in E[(q + noise)^i]
         M = sp.zeros(degree + 1, degree + 1)
 
         # for each COLUMN in M
@@ -75,19 +83,18 @@ class NoiseModel:
             mu = self.moment(i, q)
             # express mu as a polynomial in q and extract coefficients from highest to lowest degree
             mu_poly = sp.Poly(mu, q) 
-            mu_coeffs = mu_poly.all_coeffs()
-            # pad the coeffs with zero to ensure it has length degree + 1
-            mu_coeffs = [0] * (degree + 1 - len(mu_coeffs)) + mu_coeffs
-            
+
             # for each ROW in M
             for k in range(degree + 1):
                 # fill M with the coefficients of the raw moment
-                M[k, i] = mu_coeffs[k]
+                M[k, i] = mu_poly.coeff_monomial(q**k)
 
         # solve the linear system for a
-        a = M.inv() * b
+        a = M.LUsolve(sp.Matrix(b))
+
         # build the unbiased estimator g(x) = sum_i a_i x^i
-        g = sum(a[i] * x**(degree - i) for i in range(degree + 1))
+        g = sum(a[i] * x**i for i in range(degree + 1))
+        
         return sp.expand(g)
     
     def clear_cache(self):

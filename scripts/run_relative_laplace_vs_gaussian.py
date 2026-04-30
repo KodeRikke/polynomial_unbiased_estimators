@@ -7,8 +7,7 @@ def main():
 
     polynomials = {
         "q^2": q**2,
-        "q^3 + q^2": q**3 + q**2,
-        "q^4 + q^3 + q^2": q**4 + q**3 + q**2,
+        "chebyshev T_3": sp.chebyshevt(3, q),
         "q^5 + q^4 + q^3 + q^2": q**5 + q**4 + q**3 + q**2,
     }
     # The values of q to plot / the range of q values. 
@@ -16,7 +15,7 @@ def main():
     q_range = (-10, 10) # range of q values for plotting (if we want to plot over q instead of epsilon)
 
     # The range of epsilon on the x-axis / the values of epsilon to plot.
-    epsilon_range = (0.1, 2.0)#(0.1, 5.0) # range of epsilon values for plotting
+    epsilon_range = (0.1, 5.0)#(0.1, 5.0) # range of epsilon values for plotting
     
     # (0.1, 0.25, 0.5, 0.75, 1, 1.5, 2.0)
     epsilon_values = [sp.Rational(3,2)]
