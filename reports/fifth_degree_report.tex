@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage{breqn}
+\allowdisplaybreaks
+\begin{document}
+\section*{Fifth Degree Function Report}
+\section*{Polynomial}
+\begin{dmath*}
+f(q) = a q^{5} + b q^{4} + c q^{3} + d q^{2} + e q + f
+\end{dmath*}
+\section*{Naive}
+\begin{dmath*}
+g_{\mathrm{naive}}(X) = X^{5} a + X^{4} b + X^{3} c + X^{2} d + X e + f
+\end{dmath*}
+\begin{dmath*}
+\mathbb{E}[g_{\mathrm{naive}}(X)] = a q^{5} + b q^{4} + 24 {\frac{\Delta}{\epsilon}}^{4} \left(5 a q + b\right) + 2 {\frac{\Delta}{\epsilon}}^{2} \left(10 a q^{3} + 6 b q^{2} + 3 c q + d\right) + c q^{3} + d q^{2} + e q + f
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Var}(g_{\mathrm{naive}}(X)) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(1814400 a^{2} {\frac{\Delta}{\epsilon}}^{8} + 25 a^{2} q^{8} + 40 a b q^{7} + 30 a c q^{6} + 20 a d q^{5} + 10 a e q^{4} + 16 b^{2} q^{6} + 24 b c q^{5} + 16 b d q^{4} + 8 b e q^{3} + 288 {\frac{\Delta}{\epsilon}}^{6} \left(3125 a^{2} q^{2} + 1250 a b q + 140 a c + 69 b^{2}\right) + 24 {\frac{\Delta}{\epsilon}}^{4} \left(3050 a^{2} q^{4} + 2440 a b q^{3} + 810 a c q^{2} + 200 a d q + 30 a e + 408 b^{2} q^{2} + 204 b c q + 28 b d + 15 c^{2}\right) + 2 {\frac{\Delta}{\epsilon}}^{2} \left(1100 a^{2} q^{6} + 1320 a b q^{5} + 720 a c q^{4} + 340 a d q^{3} + 120 a e q^{2} + 372 b^{2} q^{4} + 372 b c q^{3} + 156 b d q^{2} + 48 b e q + 81 c^{2} q^{2} + 54 c d q + 12 c e + 5 d^{2}\right) + 9 c^{2} q^{4} + 12 c d q^{3} + 6 c e q^{2} + 4 d^{2} q^{2} + 4 d e q + e^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{MSE}(g_{\mathrm{naive}}) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(1814400 a^{2} {\frac{\Delta}{\epsilon}}^{8} + 25 a^{2} q^{8} + 40 a b q^{7} + 30 a c q^{6} + 20 a d q^{5} + 10 a e q^{4} + 16 b^{2} q^{6} + 24 b c q^{5} + 16 b d q^{4} + 8 b e q^{3} + 20160 {\frac{\Delta}{\epsilon}}^{6} \left(45 a^{2} q^{2} + 18 a b q + 2 a c + b^{2}\right) + 360 {\frac{\Delta}{\epsilon}}^{4} \left(210 a^{2} q^{4} + 168 a b q^{3} + 56 a c q^{2} + 14 a d q + 2 a e + 28 b^{2} q^{2} + 14 b c q + 2 b d + c^{2}\right) + 12 {\frac{\Delta}{\epsilon}}^{2} \left(200 a^{2} q^{6} + 240 a b q^{5} + 130 a c q^{4} + 60 a d q^{3} + 20 a e q^{2} + 68 b^{2} q^{4} + 68 b c q^{3} + 28 b d q^{2} + 8 b e q + 15 c^{2} q^{2} + 10 c d q + 2 c e + d^{2}\right) + 9 c^{2} q^{4} + 12 c d q^{3} + 6 c e q^{2} + 4 d^{2} q^{2} + 4 d e q + e^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Bias}(g_{\mathrm{naive}}) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(10 a q^{3} + 6 b q^{2} + 12 {\frac{\Delta}{\epsilon}}^{2} \left(5 a q + b\right) + 3 c q + d\right)
+\end{dmath*}
+\section*{Unbiased}
+\begin{dmath*}
+g_{\mathrm{unb}}(X) = X^{5} a + X^{4} b + X^{3} c + X^{2} d + X e - 2 {\frac{\Delta}{\epsilon}}^{2} \left(10 X^{3} a + 6 X^{2} b + 3 X c + d\right) + f
+\end{dmath*}
+\begin{dmath*}
+\mathbb{E}[g_{\mathrm{unb}}(X)] = a q^{5} + b q^{4} + c q^{3} + d q^{2} + e q + f
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Var}(g_{\mathrm{unb}}(X)) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(1152000 a^{2} {\frac{\Delta}{\epsilon}}^{8} + 25 a^{2} q^{8} + 40 a b q^{7} + 30 a c q^{6} + 20 a d q^{5} + 10 a e q^{4} + 16 b^{2} q^{6} + 24 b c q^{5} + 16 b d q^{4} + 8 b e q^{3} + 288 {\frac{\Delta}{\epsilon}}^{6} \left(2000 a^{2} q^{2} + 800 a b q + 85 a c + 46 b^{2}\right) + 12 {\frac{\Delta}{\epsilon}}^{4} \left(4000 a^{2} q^{4} + 3200 a b q^{3} + 1020 a c q^{2} + 220 a d q + 20 a e + 552 b^{2} q^{2} + 276 b c q + 36 b d + 21 c^{2}\right) + 2 {\frac{\Delta}{\epsilon}}^{2} \left(800 a^{2} q^{6} + 960 a b q^{5} + 510 a c q^{4} + 220 a d q^{3} + 60 a e q^{2} + 276 b^{2} q^{4} + 276 b c q^{3} + 108 b d q^{2} + 24 b e q + 63 c^{2} q^{2} + 42 c d q + 6 c e + 5 d^{2}\right) + 9 c^{2} q^{4} + 12 c d q^{3} + 6 c e q^{2} + 4 d^{2} q^{2} + 4 d e q + e^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{MSE}(g_{\mathrm{unb}}) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(1152000 a^{2} {\frac{\Delta}{\epsilon}}^{8} + 25 a^{2} q^{8} + 40 a b q^{7} + 30 a c q^{6} + 20 a d q^{5} + 10 a e q^{4} + 16 b^{2} q^{6} + 24 b c q^{5} + 16 b d q^{4} + 8 b e q^{3} + 288 {\frac{\Delta}{\epsilon}}^{6} \left(2000 a^{2} q^{2} + 800 a b q + 85 a c + 46 b^{2}\right) + 12 {\frac{\Delta}{\epsilon}}^{4} \left(4000 a^{2} q^{4} + 3200 a b q^{3} + 1020 a c q^{2} + 220 a d q + 20 a e + 552 b^{2} q^{2} + 276 b c q + 36 b d + 21 c^{2}\right) + 2 {\frac{\Delta}{\epsilon}}^{2} \left(800 a^{2} q^{6} + 960 a b q^{5} + 510 a c q^{4} + 220 a d q^{3} + 60 a e q^{2} + 276 b^{2} q^{4} + 276 b c q^{3} + 108 b d q^{2} + 24 b e q + 63 c^{2} q^{2} + 42 c d q + 6 c e + 5 d^{2}\right) + 9 c^{2} q^{4} + 12 c d q^{3} + 6 c e q^{2} + 4 d^{2} q^{2} + 4 d e q + e^{2}\right)
+\end{dmath*}
+\section*{Comparison}
+\begin{dmath*}
+\text{mean gap} = - 2 {\frac{\Delta}{\epsilon}}^{2} \left(10 a q^{3} + 6 b q^{2} + 12 {\frac{\Delta}{\epsilon}}^{2} \left(5 a q + b\right) + 3 c q + d\right)
+\end{dmath*}
+\begin{dmath*}
+\text{variance gap} = - 24 {\frac{\Delta}{\epsilon}}^{4} \left(55200 a^{2} {\frac{\Delta}{\epsilon}}^{6} + 50 a^{2} q^{6} + 60 a b q^{5} + 35 a c q^{4} + 20 a d q^{3} + 10 a e q^{2} + 16 b^{2} q^{4} + 16 b c q^{3} + 8 b d q^{2} + 4 b e q + 24 {\frac{\Delta}{\epsilon}}^{4} \left(1125 a^{2} q^{2} + 450 a b q + 55 a c + 23 b^{2}\right) + {\frac{\Delta}{\epsilon}}^{2} \left(2100 a^{2} q^{4} + 1680 a b q^{3} + 600 a c q^{2} + 180 a d q + 40 a e + 264 b^{2} q^{2} + 132 b c q + 20 b d + 9 c^{2}\right) + 3 c^{2} q^{2} + 2 c d q + c e\right)
+\end{dmath*}
+\begin{dmath*}
+\text{MSE gap} = - 4 {\frac{\Delta}{\epsilon}}^{4} \left(331200 a^{2} {\frac{\Delta}{\epsilon}}^{6} + 400 a^{2} q^{6} + 480 a b q^{5} + 270 a c q^{4} + 140 a d q^{3} + 60 a e q^{2} + 132 b^{2} q^{4} + 132 b c q^{3} + 60 b d q^{2} + 24 b e q + 144 {\frac{\Delta}{\epsilon}}^{4} \left(1150 a^{2} q^{2} + 460 a b q + 55 a c + 24 b^{2}\right) + 6 {\frac{\Delta}{\epsilon}}^{2} \left(2300 a^{2} q^{4} + 1840 a b q^{3} + 660 a c q^{2} + 200 a d q + 40 a e + 288 b^{2} q^{2} + 144 b c q + 24 b d + 9 c^{2}\right) + 27 c^{2} q^{2} + 18 c d q + 6 c e + d^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Bias}(g_{\mathrm{naive}})^2 = 4 {\frac{\Delta}{\epsilon}}^{4} \left(100 a^{2} q^{6} + 120 a b q^{5} + 60 a c q^{4} + 20 a d q^{3} + 36 b^{2} q^{4} + 36 b c q^{3} + 12 b d q^{2} + 144 {\frac{\Delta}{\epsilon}}^{4} \left(25 a^{2} q^{2} + 10 a b q + b^{2}\right) + 24 {\frac{\Delta}{\epsilon}}^{2} \left(50 a^{2} q^{4} + 40 a b q^{3} + 15 a c q^{2} + 5 a d q + 6 b^{2} q^{2} + 3 b c q + b d\right) + 9 c^{2} q^{2} + 6 c d q + d^{2}\right)
+\end{dmath*}
+\end{document}

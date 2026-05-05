@@ -3,11 +3,11 @@ from dp_estimators import EstimatorSystem
 from noise_models import LaplaceNoiseModel
 # Define the SymPy symbols used in the polynomials
 q = sp.Symbol("q", real=True)
-a, b, c, d = sp.symbols("a b c d", real=True)
+a, b, c, d, e, f = sp.symbols("a b c d e f", real=True)
 
 # initialize the EstimatorSystem with the Laplace noise model and the symbolic variables
 sys = EstimatorSystem(
-    noise_model=LaplaceNoiseModel(delta="Delta", epsilon="epsilon"),
+    noise_model=LaplaceNoiseModel(Delta="Delta", epsilon="epsilon"),
     q="q",
     x="X"
 )
@@ -17,6 +17,8 @@ sys = EstimatorSystem(
 f_cubic = a*q**3 + b*q**2 + c*q + d
 f_quadratic = a*q**2 + b*q + c
 
+f_fourth_degree = a*q**4 + b*q**3 + c*q**2 + d*q + e
+f_fifth_degree = a*q**5 + b*q**4 + c*q**3 + d*q**2 + e*q + f
 f_cubic_basecase = f_cubic.subs({a:1, b: 0, c: 0, d: 0}) 
 
 def main():
@@ -32,5 +34,7 @@ def main():
     sys.pdf_report(f_quadratic, "quadratic_report", title="Quadratic Function Report")#, compact=True)
     sys.pdf_report(f_cubic_basecase, "cubic_basecase_report", title="Cubic Base Case Report")#, compact=True)
 
+    sys.pdf_report(f_fourth_degree, "fourth_degree_report", title="Fourth Degree Function Report")#, compact=True)
+    sys.pdf_report(f_fifth_degree, "fifth_degree_report", title="Fifth Degree Function Report")#, compact=True)
 if __name__ == "__main__":
     main()

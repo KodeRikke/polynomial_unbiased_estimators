@@ -6,7 +6,7 @@ direction TD
 %% This is the second (or third??) draft, before adding any Gaussian Dilly Dally.
 
 class ReportFormatter {
-  +delta: sympy.Symbol
+  +Delta: sympy.Symbol
   +epsilon: sympy.Symbol
   +beta: sympy.Symbol
   +normalize(expression) sympy.Expr
@@ -62,7 +62,7 @@ class NoiseModel {
 }
 
 class LaplaceNoiseModel {
-  +delta: sympy.Symbol
+  +Delta: sympy.Symbol
   +epsilon: sympy.Symbol
   -_moment_about_zero(k) sympy.Expr
   +moment(i, q) sympy.Expr

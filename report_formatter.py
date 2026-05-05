@@ -13,8 +13,8 @@ class ReportFormatter:
     to make the expressions more interpretable and suitable for presentation. The class also includes methods to format expressions 
     for inline display and to render the summary of the estimation results in a structured format for both terminal and LaTeX outputs.
     """
-    def __init__(self, delta, epsilon): #ratio_name="ratio"):
-        self.Delta = sp.sympify(delta)
+    def __init__(self, Delta, epsilon): #ratio_name="ratio"):
+        self.Delta = sp.sympify(Delta)
         self.epsilon = sp.sympify(epsilon)
         self.beta = sp.Symbol("beta", real=True, positive=True)  # define a new symbol beta for noise scale
 

@@ -13,7 +13,7 @@ from dp_estimators import EstimatorSystem, LaplaceNoiseModel
 q = sp.Symbol("q", real=True)
 
 sys = EstimatorSystem(
-    noise_model=LaplaceNoiseModel(delta="Delta", epsilon="epsilon"),
+    noise_model=LaplaceNoiseModel(Delta="Delta", epsilon="epsilon"),
     q="q",
     x="q_tilde"
 )

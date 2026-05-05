@@ -4,21 +4,23 @@ Thus the structure of this code might not live up to the professionel expectatio
 True to the heart of DIKU, some of this code has also been created while drunk.
 
 ------------------------ Dependencies ------------------------------
-SymPy
 
-dp_estimators.py:
-    typing.Union
+    All files:
+        SymPy
+    
+    dp_estimators.py:
+        typing.Union
+    
+    noise_models.py:
+        functools.lru_cache
+    
+    print_LaTeX.py:
+        subprocess, pathlib.Path
+    
+    plot_mse_var.py:
+        numpy, os, matplotlib, pathlib.Path
 
-noise_models.py:
-    functools.lru_cache
 
-print_LaTeX.py:
-    subprocess, pathlib.Path
-
-plot_mse_var.py:
-    numpy, os, matplotlib, pathlib.Path
-
-During implementation, the package 
 ----------------------- Dependencies --------------------------------
 
 When using the library, remember that SymPy uses SYMBOLIC expressions and functions. Therefor the symbols needs to be defined as "symbolic", i.e.:

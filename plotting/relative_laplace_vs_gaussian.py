@@ -35,7 +35,7 @@ def build_system(noise_model="laplace"):
         epsilon = sp.symbols("epsilon", positive=True, real=True)
 
         system = EstimatorSystem(
-            noise_model=LaplaceNoiseModel(delta=Delta, epsilon=epsilon),
+            noise_model=LaplaceNoiseModel(Delta=Delta, epsilon=epsilon),
             q=q,
             x=X
         )
