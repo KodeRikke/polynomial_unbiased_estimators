@@ -5,6 +5,7 @@ import matplotlib
 matplotlib.use("TkAgg") # Use the TkAgg backend for interactive plotting
 import matplotlib.pyplot as plt
 from pathlib import Path
+from dp_calibration.SigmaFromEpsilon import SigmaFromEpsilon
 
 
 __all__ = [
@@ -74,12 +75,10 @@ def metric_expr_estimators(reports_by_label, label, estimator, metric):
     """
     return reports_by_label[label][estimator][metric]
 
-
-
 def evaluate_on_grid(expr, x_symbol, x_grid, subs_dict):
     """
     Function to evaluate a symbolic expression over a grid of values for 
-    a specific variable.
+    a specific variable. Now supporting SigmaFromEpsilon.
     Input:
     - expr: the symbolic expression to evaluate
     - x_symbol: the symbolic variable in the expression, that are to be the x-axis
@@ -89,31 +88,42 @@ def evaluate_on_grid(expr, x_symbol, x_grid, subs_dict):
     - A dictionary mapping each value in the grid to the evaluated 
     result of the expression.
     """
-    eval_expr = sp.simplify(expr.subs(subs_dict))
-    
-    # Check that all symbols in the evaluated expression are substituted.
-    # For easier interpretation of error-messages.
-    leftover = eval_expr.free_symbols - {x_symbol}
-    if leftover:
-        raise ValueError(
-            f"Expression still contains symbols {leftover}. "
-            f"x_symbol={x_symbol}, subs_dict={subs_dict}, expr={eval_expr}"
-        )
-    
-    eval_func = sp.lambdify(x_symbol, eval_expr, modules=["numpy"])
-    y = eval_func(x_grid)
+    y_vals = []
 
-    y = np.asarray(y, dtype=float)
+    for x_val in x_grid:
 
-    if y.shape == (): 
-        # scalar output, make it an array of the same shape as x_grid
-        y = np.full_like(x_grid, fill_value=float(y), dtype=float)
-    elif y.shape == (1,):
-        # length - 1 array
-        y = np.full_like(x_grid, fill_value=float(y[0]), dtype=float)
-    # clean inf/nan for plotting
-    y[~np.isfinite(y)] = np.nan
-    return y
+        # Step 1 — substitute OTHER variables (q, Delta, etc)
+        local = expr.subs(subs_dict)
+
+        # Step 2 — substitute the swept variable (epsilon or q)
+        local = local.subs({x_symbol: x_val})
+
+        # Step 3 — replace SigmaFromEpsilon(...) with its numeric calibration
+        for node in local.atoms(SigmaFromEpsilon):
+            eps_val, delta_val, Delta_val = node.args
+
+            if eps_val.free_symbols:
+                raise ValueError(
+                    f"Cannot evaluate sigma: epsilon is still symbolic in node {node}"
+                )
+
+            sigma_numeric = SigmaFromEpsilon.numeric(float(eps_val),
+                                                     float(delta_val),
+                                                     float(Delta_val))
+            local = local.subs(node, sigma_numeric)
+
+        # Step 4 — check no leftover symbols remain
+        leftovers = local.free_symbols
+        if leftovers:
+            raise ValueError(
+                f"Expression still contains symbols {leftovers} after numeric substitution."
+            )
+
+        # Step 5 — convert to float
+        y_vals.append(float(local))
+
+    # Return array
+    return np.array(y_vals, dtype=float)
 
 # ----------------------------------------------------------------------
 # --- Plotting utilities ---

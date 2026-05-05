@@ -12,6 +12,8 @@ def shared_polynomials():
         "chebyshev T_3": sp.chebyshevt(3, q),
     }
 
+# the value of delta for the Gaussian noise. We can set it to a very small value to approximate pure DP, since the Laplace mechanism is pure DP.
+delta_value = 1e-10 # must be smaller than 1e-5
 
 def experiment_a_fixed_q_vary_epsilon(polynomials):
     """
@@ -32,6 +34,7 @@ def experiment_a_fixed_q_vary_epsilon(polynomials):
         epsilon_range=(0.5, 5.0),
         polynomials=polynomials,
         Delta_values=[1],
+        delta_value=delta_value,
         metrics=[
             "variance",
             "mse",
@@ -67,6 +70,7 @@ def experiment_b_fixed_epsilon_vary_q(polynomials):
         epsilon_range=(0.5, 5.0),  # not central here
         polynomials=polynomials,
         Delta_values=[1],
+        delta_value=delta_value,
         metrics=[
             "variance",
             "mse",
@@ -99,6 +103,7 @@ def experiment_c_focused_noise_comparison(polynomials):
         ],
         epsilon_range=(0.75, 4.0),
         polynomials=polynomials,
+        delta_value=delta_value,
         Delta_values=[1],
         metrics=[
             "variance",

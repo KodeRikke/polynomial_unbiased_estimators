@@ -36,6 +36,7 @@ from plotting.utility_plotting import (
         evaluate_on_grid,
         plot_curves
 )
+from dp_calibration.SigmaFromEpsilon import SigmaFromEpsilon
 
 METRIC_LABELS = {
     "variance": "Variance",
@@ -142,12 +143,12 @@ def base_subs_for_noise(
         *, 
         q_value=None, 
         Delta_value=None, 
-        epsilon_value=None
+        epsilon_value=None, 
+        delta_value=None
 ):
     """
     Build substitution dicts for Gaussian or Laplace noise. 
-    For Gaussian, epsilon is introduced via the relation: 
-        sigma = sqrt(2) * Delta / epsilon, 
+    For Gaussian, epsilon is introduced via the relation from dp_calibration/gaussian.py, 
     as it is not an inherent parameter ot this noise distribution. 
 
     If epsilon_value is None, sigma remains symbolic in epsilon
@@ -163,6 +164,7 @@ def base_subs_for_noise(
     Output:
     - A dictionary of substitutions to apply to the symbolic expressions for the given noise distribution.
     """
+    # ----- Laplace -----
     if noise_dist == "laplace":
         subs = {}
         if q_value is not None:
@@ -172,18 +174,32 @@ def base_subs_for_noise(
         if epsilon_value is not None:            
             subs[symbols[noise_dist]["epsilon"]] = epsilon_value
 
+    # ----- Gaussian -----
     elif noise_dist == "gaussian":
         subs = {}
         if q_value is not None:
             subs[symbols[noise_dist]["q"]] = q_value
 
         if Delta_value is not None:
+            # epsilon is symbolic and symbolic report construct id being done
             if epsilon_value is None:
-                # the value epsilon is inherent in Gaussian dist
+                # the value epsilon is NOT inherent in Gaussian dist
                 epsilon_symbol = symbols["laplace"]["epsilon"]
-                subs[symbols[noise_dist]["sigma"]] = sp.sqrt(2) * Delta_value / epsilon_symbol
+                subs[symbols[noise_dist]["sigma"]] = SigmaFromEpsilon(
+                    epsilon_symbol,
+                    delta_value,  # a very small delta to approximate pure DP
+                    Delta_value
+                )
+            # epsilon is numeric (float, int, Rational, etc)
             else:
-                subs[symbols[noise_dist]["sigma"]] = sp.sqrt(2) * Delta_value / epsilon_value
+                 # turn the value of epsilon into a float
+                 # to ensure it can be passed to the numerical func
+                 eps_num = float(epsilon_value)
+                 sigma_val = SigmaFromEpsilon.numeric(
+                    eps_num,
+                    delta_value,  # a very small delta to approximate pure DP
+                    float(Delta_value))
+                 subs[symbols[noise_dist]["sigma"]] = sigma_val
     else:
         raise ValueError(f"Unsupported noise distribution: {noise_dist}")
     return subs
@@ -198,7 +214,8 @@ def curves_direct_for_fixed_poly_and_q(
         metric,
         q_value,
         Delta_value,
-        eps_grid
+        eps_grid,
+        delta_value
 ):
     """
     One plot for a fixed polynomial and fixed q.
@@ -227,6 +244,7 @@ def curves_direct_for_fixed_poly_and_q(
                 symbols=symbols,
                 q_value=q_value,
                 Delta_value=Delta_value,
+                delta_value=delta_value
             )
 
             label = f"{noise_dist.capitalize()} {estimator}"
@@ -247,7 +265,8 @@ def curves_direct_for_fixed_poly_and_epsilon(
         metric,
         epsilon_value,
         Delta_value, 
-        q_grid   
+        q_grid, 
+        delta_value
 ):
     """
     One plot for a fixed polynomial and fixed epsilon.
@@ -277,6 +296,7 @@ def curves_direct_for_fixed_poly_and_epsilon(
                 symbols=symbols,
                 Delta_value=Delta_value,
                 epsilon_value=epsilon_value,
+                delta_value=delta_value
             )
 
             label = f"{noise_dist.capitalize()} {estimator}"
@@ -299,10 +319,27 @@ def plot_plots(
     epsilon_range,
     polynomials,
     Delta_values,
+    delta_value,
     metrics,
     each_plot,
     path_for_plots
 ):
+    """
+    Main function to generate and save the desired plots.
+    Input:
+    - q_values: a list of specific q values to plot (if plotting over epsilon)
+    - q_range: a tuple (q_min, q_max) specifying the range of q values to plot (if plotting over q)
+    - epsilon_values: a list of specific epsilon values to plot (if plotting over q)
+    - epsilon_range: a tuple (epsilon_min, epsilon_max) specifying the range of epsilon values to plot (if plotting over epsilon)
+    - polynomials: a dictionary mapping polynomial names to their sympy expressions
+    - Delta_values: a list of specific Delta values to use in the plots
+    - delta_value: a specific value of delta to use in the Gaussian noise calibration (if needed)
+    - metrics: a list of metric names to plot (e.g., "variance_ratio", "mse_relative", etc.)
+    - each_plot: a list of strings indicating how to group curves in each plot (e.g., "q_by_poly", "poly_by_q", etc.)
+    - path_for_plots: the base directory path where the generated plots should be saved
+    Output:
+    - The function generates and saves the specified plots according to the input parameters.
+    """
     reports, symbols = build_reports(polynomials)
 
     eps_grid = np.linspace(epsilon_range[0], epsilon_range[1], 300)
@@ -325,13 +362,13 @@ def plot_plots(
                             q_value=q_value,
                             Delta_value=Delta_value,
                             eps_grid=eps_grid,
+                            delta_value=delta_value
                         )
 
                         title = (
                             f"{y_label} vs ε for {format_value(name)}, "
                             f"q={format_value(q_value)}, "
-                            f"Δ={format_value(Delta_value)}, "
-                            f"variance-matched Gaussian"
+                            f"Δ={format_value(Delta_value)}"
                         )
 
                         save_path = os.path.join(
@@ -361,13 +398,13 @@ def plot_plots(
                             epsilon_value=epsilon_value,
                             Delta_value=Delta_value,
                             q_grid=q_grid,
+                            delta_value=delta_value
                         )
 
                         title = (
                             f"{y_label} vs q for {format_value(name)}, "
                             f"ε={format_value(epsilon_value)}, "
-                            f"Δ={format_value(Delta_value)}, "
-                            f"variance-matched Gaussian"
+                            f"Δ={format_value(Delta_value)}"
                         )
 
                         save_path = os.path.join(
