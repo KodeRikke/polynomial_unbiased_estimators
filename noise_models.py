@@ -109,11 +109,11 @@ class LaplaceNoiseModel(NoiseModel):
     The concrete strategy Laplace Noise Model inherits from NoiseModel and is responsible for
     calculating moments and the unbiased transform for Laplace noise.
     When initializing the LaplaceNoiseModel, the following needs to be provided:
-        delta: a variable s.a. an int, float or sympy symbol representing the sensitivity of the query
+        Delta: a variable s.a. an int, float or sympy symbol representing the sensitivity of the query
         epsilon: a variable s.a. an int, float or sympy symbol representing the privacy budget / noise scale
     """
-    def __init__(self, delta, epsilon):
-        self.delta = sp.sympify(delta)
+    def __init__(self, Delta, epsilon):
+        self.Delta = sp.sympify(Delta)
         self.epsilon = sp.sympify(epsilon)
 
     def _noise_central_moment(self, k):
@@ -126,10 +126,10 @@ class LaplaceNoiseModel(NoiseModel):
         Because the noise has mean 0, this equals the k-th raw moment E[noise^k].    
 
         Input: k is a non-negative integer representing the order of the moment
-        Output: the k-th moment of the noise distribution, which is (delta/epsilon)^k * k! if k is even, and 0 if k is odd.
+        Output: the k-th moment of the noise distribution, which is (Delta/epsilon)^k * k! if k is even, and 0 if k is odd.
         """
         if k % 2 == 0: # even k
-            return (self.delta / self.epsilon)**k * sp.factorial(k) 
+            return (self.Delta / self.epsilon)**k * sp.factorial(k) 
         else: # odd k
             return 0 # if not caught by caller
 
@@ -168,10 +168,10 @@ class LaplaceNoiseModel(NoiseModel):
         Input: 
         f: a polynomial function in q, 
         x: the variable representing the observed statistic.
-        Output: the unbiased estimator g(x) = f(x) - (delta/epsilon)^2 f''(x), s.t. E[g(x)] = f(q).
+        Output: the unbiased estimator g(x) = f(x) - (Delta/epsilon)^2 f''(x), s.t. E[g(x)] = f(q).
         """
         f_dd = sp.diff(f, x, 2)  # second derivative
-        g = f - (self.delta / self.epsilon)**2 * f_dd
+        g = f - (self.Delta / self.epsilon)**2 * f_dd
         return g
     
     def clear_cache(self):

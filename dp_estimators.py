@@ -99,10 +99,10 @@ class EstimatorSystem:
     def summary_report(self, f, *, notation="beta", compact=False):
         report = self.compare(f)
         noise_model = self.context.noise_model
-        if hasattr(noise_model, "delta") and hasattr(noise_model, "epsilon"):
-            delta = noise_model.delta
+        if hasattr(noise_model, "Delta") and hasattr(noise_model, "epsilon"):
+            Delta = noise_model.Delta
             epsilon = noise_model.epsilon
-            fmt = ReportFormatter(delta=delta, epsilon=epsilon)
+            fmt = ReportFormatter(Delta=Delta, epsilon=epsilon)
         else:
             raise ValueError("summary_compare currently expect a Laplace-like model.")
         return fmt.render_summary(report, notation=notation, compact=compact)
@@ -119,10 +119,10 @@ class EstimatorSystem:
     def latex_compare(self, f, notation="grouped", compact=False):
         report = self.compare(f)
         noise_model = self.context.noise_model
-        if hasattr(noise_model, "delta") and hasattr(noise_model, "epsilon"):
-            delta = noise_model.delta
+        if hasattr(noise_model, "Delta") and hasattr(noise_model, "epsilon"):
+            Delta = noise_model.Delta
             epsilon = noise_model.epsilon
-            fmt = ReportFormatter(delta=delta, epsilon=epsilon)
+            fmt = ReportFormatter(Delta=Delta, epsilon=epsilon)
         else:
             raise ValueError("latex_compare currently expect a Laplace-like model.")
         return fmt.render_latex(report, notation=notation, compact=compact)

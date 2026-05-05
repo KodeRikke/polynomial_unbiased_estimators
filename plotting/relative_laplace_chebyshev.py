@@ -33,7 +33,7 @@ def build_system():
     X = sp.Symbol("X", real=True)
 
     system = EstimatorSystem(
-        noise_model=LaplaceNoiseModel(delta=Delta, epsilon=epsilon),
+        noise_model=LaplaceNoiseModel(Delta=Delta, epsilon=epsilon),
         q=q,
         x=X
     )

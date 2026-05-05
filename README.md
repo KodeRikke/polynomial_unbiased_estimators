@@ -5,19 +5,20 @@ True to the heart of DIKU, some of this code has also been created while drunk.
 
 ------------------------ Dependencies ------------------------------
 
-SymPy
-
-dp_estimators.py:
-    typing.Union
-
-noise_models.py:
-    functools.lru_cache
-
-print_LaTeX.py:
-    subprocess, pathlib.Path
-
-plot_mse_var.py:
-    numpy, os, matplotlib, pathlib.Path
+    All files:
+        SymPy
+    
+    dp_estimators.py:
+        typing.Union
+    
+    noise_models.py:
+        functools.lru_cache
+    
+    print_LaTeX.py:
+        subprocess, pathlib.Path
+    
+    plot_mse_var.py:
+        numpy, os, matplotlib, pathlib.Path
 
 
 ----------------------- Dependencies --------------------------------
