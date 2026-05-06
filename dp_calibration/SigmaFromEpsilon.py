@@ -1,5 +1,5 @@
 import sympy as sp
-import numpy as np
+from dp_calibration.gaussian import calibrateAnalyticGaussianMechanism
 
 class SigmaFromEpsilon(sp.Function):
     """
@@ -14,14 +14,8 @@ class SigmaFromEpsilon(sp.Function):
 
     @staticmethod
     def numeric(epsilon_value, delta_value, Delta_value):
-        from dp_calibration.gaussian import calibrateAnalyticGaussianMechanism
         return calibrateAnalyticGaussianMechanism(
             float(epsilon_value),
             float(delta_value),
             float(Delta_value)
         )
-        #return analytical_gaussian_sigma(
-        #    float(epsilon_value),
-        #    float(delta_value),
-        #    float(Delta_value)
-        #)

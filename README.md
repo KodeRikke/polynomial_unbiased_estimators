@@ -5,20 +5,66 @@ True to the heart of DIKU, some of this code has also been created while drunk.
 
 ------------------------ Dependencies ------------------------------
 
-    All files:
-        SymPy
-    
-    dp_estimators.py:
+    All files: 
+        sympy
+        numpy
+        os
+        matplotlib
         typing.Union
+        functools.lru_cache
+        subprocess 
+        pathlib.Path
+        math 
+        scipy.special
+    
+    List of dependencies for individual files (excluding scripts):
+
+    # General Architecture
+    dp_estimators.py:
+        sympy, typing.Union
     
     noise_models.py:
-        functools.lru_cache
+        sympy, functools.lru_cache, 
+        report_formatter.ReportFormatter, print_LaTeX.build_latex_document, noise_models.NoiseModel
     
+    # Utility
     print_LaTeX.py:
         subprocess, pathlib.Path
+
+    report_formatter.py:
+        sympy
+    
+    gaussian.py:
+        math.exp, math.sqrt, scipy.special.erf
+    
+    SigmaFromEpsilon.py:
+        sympy
+        gaussian.calibrateAnalyticGaussianMechanism
+
+    utility_plotting.py:
+        sympy, numpy, os, matplotlib.pyplot, pathlib.Path
+        SigmaFromEpsilon.SigmaFromEpsilon
     
     plot_mse_var.py:
         numpy, os, matplotlib, pathlib.Path
+    
+    # Plotting
+    relative_laplace_vs_gaussian.py
+        sympy, numpy, os.path
+        dp_estimators.EstimatorSystem, noise_models.LaplaceNoiseModel, noise_models.GaussianNoiseModel,
+        utility_plotting.format_value, utility_plotting.metric_expr, utility_plotting.evaluate_on_grid, utility_plotting.plot_curves, utility_plotting.metric_folder
+        SigmaFromEpsilon.SigmaFromEpsilon
+
+    direct_laplace_vs_gaussian.py
+        sympy, numpy, os.path
+        dp_estimators.EstimatorSystem, noise_models.LaplaceNoiseModel, noise_models.GaussianNoiseModel,
+        utility_plotting.format_value, utility_plotting.metric_expr, utility_plotting.evaluate_on_grid, utility_plotting.plot_curves, utility_plotting.metric_folder
+        SigmaFromEpsilon.SigmaFromEpsilon
+
+    relative_laplace_chebyshev.py
+        sympy, numpy, os.path
+        dp_estimators.EstimatorSystem, noise_models.LaplaceNoiseModel
+        utility_plotting.format_value, utility_plotting.metric_expr, utility_plotting.evaluate_on_grid, utility_plotting.plot_curves, utility_plotting.metric_folder
 
 
 ----------------------- Dependencies --------------------------------

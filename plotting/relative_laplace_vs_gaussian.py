@@ -1,8 +1,6 @@
 from os import path
-
 import sympy as sp
 import numpy as np
-import os
 
 from dp_estimators import EstimatorSystem
 from noise_models import LaplaceNoiseModel, GaussianNoiseModel
@@ -409,9 +407,10 @@ def plot_plots(
                     )
                     title = (
                         f"{y_label} vs ε, for {format_value(name)}, " 
-                        f"Δ = {format_value(Delta_value)}"
+                        f"Δ = {format_value(Delta_value)}, "
+                        f"δ={format_value(delta_value)}"
                     )
-                    save_path = os.path.join(
+                    save_path = path.join(
                         path_for_plots, 
                         "q_by_poly",
                         metric_folder(metric)
@@ -440,9 +439,10 @@ def plot_plots(
                     )
                     title = (
                         f"{y_label} vs ε, for q = {format_value(q_value)}, "
-                        f"Δ = {format_value(Delta_value)}"
+                        f"Δ = {format_value(Delta_value)}, "
+                        f"δ={format_value(delta_value)}"
                     )
-                    save_path = os.path.join(
+                    save_path = path.join(
                         path_for_plots, 
                         "poly_by_q", 
                         metric_folder(metric)
@@ -470,9 +470,10 @@ def plot_plots(
                     )
                     title = (
                         f"{y_label} vs ε, for {format_value(name)}, "
-                        f"Δ = {format_value(Delta_value)}"
+                        f"Δ = {format_value(Delta_value)}, "
+                        f"δ={format_value(delta_value)}"
                     )
-                    save_path = os.path.join(
+                    save_path = path.join(
                         path_for_plots, 
                         "epsilon_by_poly", 
                         metric_folder(metric)

@@ -5,7 +5,7 @@ import sympy as sp
 q = sp.Symbol("q", real=True)
 a, b, c, d, e = sp.symbols("a b c d e", real=True)
 B = sp.Symbol("B", real=True, positive=True)  # Scale parameter for the Laplace distribution
-
+s = sp.Symbol("s", real=True)  # Symbol sigma for the Gaussian distribution
 # Define the polynomial function we wish to test this with: 
 f_fourth_degree = a*q**4 + b*q**3 + c*q**2 + d*q + e
 
@@ -23,6 +23,13 @@ moment_values = {
     sp.Symbol("mu_3"): 0,
     sp.Symbol("mu_4"): 24*B**4,
 }
+moment_values_gauss = {
+    sp.Symbol("mu_0"): 1,
+    sp.Symbol("mu_1"): 0,
+    sp.Symbol("mu_2"): s**2,
+    sp.Symbol("mu_3"): 0,
+    sp.Symbol("mu_4"): 3*s**4,
+}
 
 # Construct the moment matrix M, which for a p'th degree polynomial is a (p+1)x(p+1) matrix, 
 # where the first row is [mu_0, mu_1, ..., mu_p], 
@@ -37,6 +44,12 @@ def moment_matrix(p):
             M[i, j] = sp.binomial(j, i) * sp.symbols(f"mu_{j-i}")
 
     return M
+
+# construct the moment matrix with the given moment
+# values: 
+def moment_matrix_with_values(p, moments):
+    M = moment_matrix(p)
+    return M.subs(moments)
 
 # define inverse
 def moment_matrix_inverse(p):
@@ -59,8 +72,13 @@ def print_moment_matrix(p):
     print(f"Moment Matrix M for p={p}:")
     sp.pprint(M)
 
-def print_moment_matrix_inverse(p):
-    M_inv = moment_matrix_inverse(p).subs(moment_values)
+def print_moment_matrix_with_values(p, moments):
+    M = moment_matrix_with_values(p, moments)
+    print(f"Moment Matrix M with values for p={p}:")
+    sp.pprint(M)
+
+def print_moment_matrix_inverse(p, moments):
+    M_inv = moment_matrix_inverse(p).subs(moments)
     print(f"Inverse of Moment Matrix M^-1 for p={p}:")
     sp.pprint(M_inv)
 
@@ -72,7 +90,8 @@ def print_coefficient_vector(p, polynomial):
 def main():
     p = 4  # Degree of the polynomial
     print_moment_matrix(p)
-    print_moment_matrix_inverse(p)
+    print_moment_matrix_with_values(p, moments=moment_values_gauss)
+    print_moment_matrix_inverse(p, moments=moment_values_gauss)
     print_coefficient_vector(p, f_fourth_degree)
 
 if __name__ == "__main__":

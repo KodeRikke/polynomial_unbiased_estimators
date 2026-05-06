@@ -1,6 +1,6 @@
 import sympy as sp
 import numpy as np
-import os
+from os import path
 
 from dp_estimators import EstimatorSystem
 from noise_models import LaplaceNoiseModel
@@ -213,7 +213,7 @@ def plot_plots(
                         f"{y_label} for Chebyshev degree {degree}, "
                         f"$\\Delta$ = {Delta_value}"
                     )
-                    save_path = os.path.join(
+                    save_path = path.join(
                         path_for_plots, "q_by_degree", metric_folder(metric)
                     )
                     plot_curves(
@@ -239,7 +239,7 @@ def plot_plots(
                         base_subs={Delta_symbol: Delta_value},
                     )
                     title = f"{y_label} for q = {format_value(q_value)}, $\\Delta$ = {Delta_value}"
-                    save_path = os.path.join(
+                    save_path = path.join(
                         path_for_plots, "degree_by_q", metric_folder(metric)
                     )
                     plot_curves(
@@ -268,7 +268,7 @@ def plot_plots(
                         f"{y_label} for Chebyshev degree {degree}, "
                         f"$\\Delta$ = {Delta_value}, curves by epsilon"
                     )
-                    save_path = os.path.join(
+                    save_path = path.join(
                         path_for_plots, "epsilon_by_degree", metric_folder(metric)
                     )
                     plot_curves(
