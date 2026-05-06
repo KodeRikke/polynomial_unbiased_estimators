@@ -24,7 +24,7 @@ def main():
 
     # The fixed values of Delta for plotting; often Dela = 1 is used for simplicity, w.o. loss of generality, since the noise parameter Beta = Delta / epsilon. 
     Delta_values = [1] # [0.5, 1, 2]
-    
+
     # the value of delta for the Gaussian noise. We can set it to a very small value to approximate pure DP, since the Laplace mechanism is pure DP.
     delta_value = 1e-10 # must be smaller than 1e-5
 

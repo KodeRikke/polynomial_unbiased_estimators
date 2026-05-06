@@ -1,4 +1,3 @@
-import sympy as sp
 from math import exp, sqrt
 from scipy.special import erf
 
@@ -69,12 +68,13 @@ def calibrateAnalyticGaussianMechanism(epsilon, delta, GS, tol = 1.e-12):
 
     return sigma
 
-def original_gaussian_sigma(epsilon, delta, Delta):
-    """
-    Original formula for the standard deviation of Gaussian noise to achieve (epsilon, delta)-DP with sensitivity Delta.
-    This is based on the "Gaussian Mechanism" from Dwork and Roth (2014).
-    The formula only holds for epsilon in (0,1).
-    sigma**2 = 2 * ln(1.25/delta) * (Delta/epsilon)**2
-    """
-    sigma = sp.sqrt(2 * sp.log(1.25/delta)) * (Delta/epsilon)
-    return sigma
+#import sympy as sp
+#def original_gaussian_sigma(epsilon, delta, Delta):
+#    """
+#    Original formula for the standard deviation of Gaussian noise to achieve (epsilon, delta)-DP with sensitivity Delta.
+#    This is based on the "Gaussian Mechanism" from Dwork and Roth (2014).
+#    The formula only holds for epsilon in (0,1).
+#    sigma**2 = 2 * ln(1.25/delta) * (Delta/epsilon)**2
+#    """
+#    sigma = sp.sqrt(2 * sp.log(1.25/delta)) * (Delta/epsilon)
+#    return sigma
