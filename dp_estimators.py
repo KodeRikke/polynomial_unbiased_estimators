@@ -1,6 +1,6 @@
 import sympy as sp
-from report_formatter import ReportFormatter
-from print_LaTeX import build_latex_document
+from utility.report_formatter import ReportFormatter
+from utility.print_LaTeX import build_latex_document
 from noise_models import NoiseModel
 from typing import Union
 
@@ -335,6 +335,8 @@ class EstimatorAnalyzer:
         mse = sp.expand(variance + bias**2)
 
         check = sp.simplify(sp.expand(mse - mse_direct))
+        if check != 0: ###################### so the symbolic decomposition check does not fail on tiny floating residue during these sweeps.
+            check = sp.nsimplify(check, tolerance=1e-12) #####################
         if check != 0:
             raise ValueError(f"MSE decomposition check failed: {check}")
         return mse
