@@ -1,6 +1,6 @@
 import sympy as sp
 
-from plotting.relative_laplace_vs_gaussian import plot_plots
+from plotting.plot_relative_laplace_vs_gaussian import plot_plots
 
 def main():
     q = sp.Symbol("q", real=True)

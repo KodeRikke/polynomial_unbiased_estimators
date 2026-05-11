@@ -1,6 +1,6 @@
 import sympy as sp
 
-from plotting.relative_laplace_chebyshev import plot_plots
+from plotting.plot_relative_laplace_chebyshev import plot_plots
 
 def main():
     # The values of q to plot / the range of q values. 
