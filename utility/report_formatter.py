@@ -13,10 +13,23 @@ class ReportFormatter:
     to make the expressions more interpretable and suitable for presentation. The class also includes methods to format expressions 
     for inline display and to render the summary of the estimation results in a structured format for both terminal and LaTeX outputs.
     """
-    def __init__(self, Delta, epsilon): #ratio_name="ratio"):
-        self.Delta = sp.sympify(Delta)
-        self.epsilon = sp.sympify(epsilon)
+    def __init__(self, Delta=None, epsilon=None, sigma=None):
         self.beta = sp.Symbol("beta", real=True, positive=True)  # define a new symbol beta for noise scale
+
+        if sigma is not None:
+            if Delta is not None or epsilon is not None:
+                raise ValueError("Use either (Delta, epsilon) for Laplace or sigma for Gaussian, not both.")
+            self.noise_family = "gaussian"
+            self.sigma = sp.sympify(sigma)
+            self.Delta = None
+            self.epsilon = None
+        elif Delta is not None and epsilon is not None:
+            self.noise_family = "laplace"
+            self.Delta = sp.sympify(Delta)
+            self.epsilon = sp.sympify(epsilon)
+            self.sigma = None
+        else:
+            raise ValueError("ReportFormatter requires either (Delta, epsilon) or sigma.")
 
     """
     The normalize method takes a SymPy expression and substitutes Delta with beta*epsilon, where beta is the ratio of Delta to epsilon.
@@ -31,11 +44,13 @@ class ReportFormatter:
             return expression # nothing to normalize
 
         expr = sp.sympify(expression)
-        expr_beta = expr.subs({self.Delta: self.beta * self.epsilon}) # substitute Delta with beta*epsilon
-        expr_beta = sp.expand(expr_beta) # expand the expression after substitution
-        expr_beta = sp.collect(expr_beta, self.beta) # collect by beta (both even and odd powers)
-        expr_beta = sp.factor_terms(expr_beta)  # factor common terms
-        return expr_beta
+        if self.noise_family == "laplace":
+            expr = expr.subs({self.Delta: self.beta * self.epsilon}) # substitute Delta with beta*epsilon
+            expr = sp.expand(expr) # expand the expression after substitution
+            expr = sp.collect(expr, self.beta) # collect by beta (both even and odd powers)
+        expr = sp.factor_terms(expr)  # factor common terms
+        expr = sp.simplify(expr)
+        return expr
     
     """
     The compact method takes a SymPy expression and applies a series of transformations to make it more concise and suitable for display, especially in LaTeX reports.
@@ -51,7 +66,8 @@ class ReportFormatter:
 
         # Shorten for display purposes
         expr = sp.factor_terms(expr)  # factor common terms
-        expr= sp.collect(expr, self.beta) # collect by beta (both even and odd powers)
+        if self.noise_family == "laplace":
+            expr = sp.collect(expr, self.beta) # collect by beta (both even and odd powers)
         expr = sp.cancel(expr) if expr.is_rational_function else expr # cancel common factors if it's a rational function
         return expr
     
@@ -87,7 +103,7 @@ class ReportFormatter:
         else:
             expr = self.normalize(expr)
 
-        if notation == "grouped":
+        if self.noise_family == "laplace" and notation == "grouped":
             # In the grouped notation, we want to substitute beta back with Delta/epsilon for better readability in the terminal
             expr = expr.subs(self.beta, self.Delta / self.epsilon)
         return sp.sstr(expr)
@@ -146,7 +162,7 @@ class ReportFormatter:
             self._line("bias_naive_squared", n_bias_squared),
         ]
 
-        if notation == "beta":
+        if self.noise_family == "laplace" and notation == "beta":
             lines.insert(0, "Notation: beta = Delta/epsilon")
             lines.insert(1, "")
 
@@ -171,13 +187,15 @@ class ReportFormatter:
             expr = self.compact(expr)
         else:
             expr = self.normalize(expr) # always normalize to noise_scale for LaTeX rendering, since we want to substitute beta with Delta/epsilon in the grouped notation
-        if notation == "grouped":
+        if self.noise_family == "laplace" and notation == "grouped":
             return sp.latex(
                 expr,
                 symbol_names={
                     self.beta: r"{\frac{\Delta}{\epsilon}}"
                 }
             )
+        if self.noise_family == "gaussian":
+            return sp.latex(expr)
         return sp.latex(expr)
 
     """
@@ -213,7 +231,7 @@ class ReportFormatter:
 
         lines = []
 
-        if notation == "beta":
+        if self.noise_family == "laplace" and notation == "beta":
             lines += [
                 r"\[\beta = \frac{\Delta}{\epsilon}\]",
                 ""

@@ -39,7 +39,7 @@ class NoiseModel:
         """"
         The _general_unbiased_transform method is a helper-function and a 
         general implementation of the unbiased transform for any noise model
-        with known raw moments and a polynomial function f. It guilds and 
+        with known raw moments and a polynomial function f. It builds and 
         solves the linear system from Calmon et al., THM 22, to find the 
         unbiased estimator g(x) s.t. E[g(q + noise)] = f(q).
         This is done by defining the coefficients of f as the vector b, 

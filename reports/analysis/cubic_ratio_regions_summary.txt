@@ -1,0 +1,58 @@
+Cubic Ratio-Space Safety Analysis
+====================================================================================================
+
+Definitions:
+  u = b/a, v = c/a (a != 0)
+  s = Delta / epsilon
+  unbiased safe if I_mse(x) < 0 and I_var(x) < 0 for all x in [x_min, x_max]
+  with endpoint check due to convexity in x
+
+Configuration:
+  epsilon values: [0.1, 0.5, 1.0, 2.0, 5.0, 7.0, 10.0]
+  Delta: 1.0
+  x range: [-15.0, 15.0]
+  u grid: [-12.0, 12.0] with 241 points
+  v grid: [-2600.0, -900.0] with 341 points
+
+epsilon=0.1 (s=10):
+  both safe: 19800 / 82181 (24.09%)
+  mse only: 0
+  var only: 20989
+  best robustness point: u=0.000, v=-2600.000, margin=4125.000
+
+epsilon=0.5 (s=2):
+  both safe: 61445 / 82181 (74.77%)
+  mse only: 0
+  var only: 18682
+  best robustness point: u=0.000, v=-2600.000, margin=9309.000
+
+epsilon=1 (s=1):
+  both safe: 62740 / 82181 (76.34%)
+  mse only: 0
+  var only: 17971
+  best robustness point: u=0.000, v=-2600.000, margin=9471.000
+
+epsilon=2 (s=0.5):
+  both safe: 63078 / 82181 (76.75%)
+  mse only: 0
+  var only: 17769
+  best robustness point: u=0.000, v=-2600.000, margin=9511.500
+
+epsilon=5 (s=0.2):
+  both safe: 63166 / 82181 (76.86%)
+  mse only: 0
+  var only: 17717
+  best robustness point: u=0.000, v=-2600.000, margin=9522.840
+
+epsilon=7 (s=0.1429):
+  both safe: 63174 / 82181 (76.87%)
+  mse only: 0
+  var only: 17709
+  best robustness point: u=0.000, v=-2600.000, margin=9523.898
+
+epsilon=10 (s=0.1):
+  both safe: 63178 / 82181 (76.88%)
+  mse only: 0
+  var only: 17705
+  best robustness point: u=0.000, v=-2600.000, margin=9524.460
+
