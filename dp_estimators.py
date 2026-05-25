@@ -103,8 +103,11 @@ class EstimatorSystem:
             Delta = noise_model.Delta
             epsilon = noise_model.epsilon
             fmt = ReportFormatter(Delta=Delta, epsilon=epsilon)
+        elif hasattr(noise_model, "sigma"):
+            sigma = noise_model.sigma
+            fmt = ReportFormatter(sigma=sigma)
         else:
-            raise ValueError("summary_compare currently expect a Laplace-like model.")
+            raise ValueError("summary_compare currently expect a Laplace-like or Gaussian model.")
         return fmt.render_summary(report, notation=notation, compact=compact)
 
     """
@@ -123,8 +126,11 @@ class EstimatorSystem:
             Delta = noise_model.Delta
             epsilon = noise_model.epsilon
             fmt = ReportFormatter(Delta=Delta, epsilon=epsilon)
+        elif hasattr(noise_model, "sigma"):
+            sigma = noise_model.sigma
+            fmt = ReportFormatter(sigma=sigma)
         else:
-            raise ValueError("latex_compare currently expect a Laplace-like model.")
+            raise ValueError("latex_compare currently expect a Laplace-like or Gaussian model.")
         return fmt.render_latex(report, notation=notation, compact=compact)
 
     """
@@ -254,7 +260,8 @@ class EstimatorAnalyzer:
         self.x = sp.Symbol(x, real=True)
 
     """
-    The mean method calculates the mean of the estimator, using the noise model's moment method, implemented according to the specific noise distribution.
+    The mean method calculates the mean of the estimator, using the noise model's moment method, 
+    implemented according to the specific noise distribution.
 
     Input: the estimator as a polynomial function in x.
     Output: the mean of the estimator, which is calculated using the noise model's moment method,

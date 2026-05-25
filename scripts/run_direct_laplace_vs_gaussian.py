@@ -1,6 +1,6 @@
 import sympy as sp
 
-from plotting.direct_laplace_vs_gaussian import plot_plots
+from plotting.plot_direct_laplace_vs_gaussian import plot_plots
 
 
 def shared_polynomials():

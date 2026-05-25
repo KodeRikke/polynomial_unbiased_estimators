@@ -2,6 +2,34 @@ import sympy as sp
 from dp_estimators import EstimatorSystem
 from noise_models import LaplaceNoiseModel, GaussianNoiseModel
 
+def main():
+    # ---- USER INPUTS ----
+    polynomial_str = "3*q**3 + 7*q**2 + 2*q + 1"  # change this
+    noise_str = "laplace"  # or "gaussian"
+    name = "polynomial_report"  # name for the generated report PDF
+    # ---------------------
+
+
+    # Parse polynomial and symbols
+    poly_expr, symbols = parse_polynomial(polynomial_str)
+
+    # Ensure variable 'q' exists; user might use x or something else
+    if "q" not in symbols:
+        raise ValueError("Polynomial must use the variable 'q' as the input variable.")
+
+    # Instantiate noise model
+    noise_model = create_noise_model(noise_str)
+
+    # Choose name for the report PDF
+    if name is None:
+        name = "polynomial_report"
+
+    # Run estimator system
+    run_analysis(
+        poly_expr=poly_expr,
+        noise_model=noise_model,
+        report_name=name
+    )
 
 def create_noise_model(name: str):
     """Return instantiated noise model from string."""
@@ -9,7 +37,7 @@ def create_noise_model(name: str):
     if name == "laplace":
         return LaplaceNoiseModel(Delta="Delta", epsilon="epsilon")
     if name == "gaussian":
-        return GaussianNoiseModel(Delta="Delta", epsilon="epsilon")
+        return GaussianNoiseModel(sigma="sigma")
     raise ValueError(f"Unknown noise model '{name}'. Use 'laplace' or 'gaussian'.")
 
 
@@ -41,36 +69,6 @@ def run_analysis(poly_expr, noise_model, report_name):
     print(summary)
 
     sys.pdf_report(poly_expr, report_name)
-
-
-def main():
-    # ---- USER INPUTS ----
-    polynomial_str = "a*q**3 + b*q**2 + c*q + d"  # change this
-    noise_str = "laplace"  # or "gaussian"
-    name = "polynomial_report"  # name for the generated report PDF
-    # ---------------------
-
-
-    # Parse polynomial and symbols
-    poly_expr, symbols = parse_polynomial(polynomial_str)
-
-    # Ensure variable 'q' exists; user might use x or something else
-    if "q" not in symbols:
-        raise ValueError("Polynomial must use the variable 'q' as the input variable.")
-
-    # Instantiate noise model
-    noise_model = create_noise_model(noise_str)
-
-    # Choose name for the report PDF
-    if name is None:
-        name = "polynomial_report"
-
-    # Run estimator system
-    run_analysis(
-        poly_expr=poly_expr,
-        noise_model=noise_model,
-        report_name=name
-    )
 
 
 if __name__ == "__main__":

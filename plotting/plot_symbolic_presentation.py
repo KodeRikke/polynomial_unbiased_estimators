@@ -45,8 +45,12 @@ def build_reports() -> dict[str, dict]:
 
     polynomials = {
         "quadratic": q**2 + q + 1,
+        "quadratic_coeffs": 2 * q**2 - 3 * q + 1,
         "cubic": q**3 + q**2 + q + 1,
         "chebyshev_T3": sp.chebyshevt(3, q),
+        "chebyshev_T4": sp.chebyshevt(4, q),
+        "quartic": q**4 + q**3 + q**2 + q + 1,
+        "quartic_coeffs": q**4 + 4 * q**3 + 3 * q**2 - 2 * q + 1,
         "cubic_coeffs": 4 * q**3 + 3 * q**2 - 2 * q + 1,
         "high_degree": q**10 + q**9 + q**8 + q**7 + q**6 + q**5 + q**4 + q**3 + q**2 + q + 1,
         "high_degree_coeffs": 2 * q**10 - 3 * q**9 + 5 * q**8 - 7 * q**7 + 11 * q**6 - 13 * q**5 + 17 * q**4 - 19 * q**3 + 23 * q**2 - 29 * q + 31,
@@ -98,21 +102,47 @@ def render_figure_polynomial_overlay(
         }
         fig, axes = plt.subplots(1, 3, figsize=(15, 4.5), sharex=True, sharey=False)
     else:
-        poly_names = ["quadratic", "cubic", "cubic_coeffs", "chebyshev_T3"]
+        poly_names = ["quadratic", 
+                      "quadratic_coeffs",
+                      "cubic", 
+                      "cubic_coeffs", 
+                      "quartic", 
+                      "quartic_coeffs", 
+                      #"chebyshev_T3", 
+                      #"chebyshev_T4",
+                      ]
         titles = {
             "quadratic": "Baseline quadratic",
+            "quadratic_coeffs": "Quadratic (varied coeffs)",
             "cubic": "Baseline cubic",
             "cubic_coeffs": "Cubic (varied coeffs)",
-            "chebyshev_T3": "Chebyshev (degree 3)",
+            "quartic": "Baseline quartic",
+            "quartic_coeffs": "Quartic (varied coeffs)",
+            #"chebyshev_T3": "Chebyshev (degree 3)",
+            #"chebyshev_T4": "Chebyshev (degree 4)",
         }
-        fig, axes = plt.subplots(2, 2, figsize=(14, 10), sharex=True, sharey=False)
-    
-    axes = np.asarray(axes)
+        fig, axes = plt.subplots(3, 2, figsize=(14, 10), sharex=True, sharey=False)
+
+    flat_axes = np.asarray(axes).ravel()
+    n_polys   = len(poly_names)
+
+    # Special layout for 5 polynomials:
+    # 5 plots in a 3×2 grid with the last cell reserved for a shared legend.
+    if n_polys == 5:
+        plot_axes = flat_axes[:5]
+        legend_ax = flat_axes[5]
+        legend_ax.axis("off")
+    else:
+        plot_axes = flat_axes[:n_polys]
+        legend_ax = None
+        for empty_ax in flat_axes[n_polys:]:
+            empty_ax.axis("off")
+
     q_symbol = sp.Symbol("q", real=True)
     epsilon_symbol = sp.Symbol("epsilon", real=True, positive=True)
     sigma_symbol = sp.Symbol("sigma", positive=True, real=True)
     Delta_symbol = sp.Symbol("Delta", real=True, positive=True)
-    
+
     # Cache symbolic ratio expressions to avoid repeated simplify calls.
     metric_cache = {
         name: {
@@ -124,10 +154,10 @@ def render_figure_polynomial_overlay(
 
     # Color map for epsilons
     colors = plt.cm.viridis(np.linspace(0.15, 0.85, len(epsilons)))
-    
-    for ax, poly_name in zip(axes.flat, poly_names):
+
+    for ax, poly_name in zip(plot_axes, poly_names):
         report = reports[poly_name]
-        
+
         # Plot Laplace and Gaussian together per epsilon so matching pairs stay adjacent.
         for idx, epsilon_value in enumerate(epsilons):
             expr_laplace = metric_cache[poly_name]["laplace"]
@@ -154,35 +184,53 @@ def render_figure_polynomial_overlay(
                 linestyle="--",
                 label=f"Gaussian ε={epsilon_value:g}",
             )
-        
+
         ax.set_title(titles[poly_name], fontsize=11)
         ax.set_xlabel(r"$q$")
         ax.set_ylabel("Ratio")
         ax.grid(True, alpha=0.3)
         add_reference_line("Variance Ratio" if metric == "variance_ratio" else "MSE Ratio", ax=ax)
-    
+
     metric_name = "variance" if metric == "variance_ratio" else "MSE"
     degree_type = "Higher-degree" if is_higher_degree else "Normal degree"
     fig.suptitle(
         f"{degree_type} polynomials: symbolic {metric_name} ratios",
         y=0.98,
     )
-    
-    handles, labels = axes.flat[0].get_legend_handles_labels()
-    legend_cols = len(epsilons)
-    # legend with added sub-title for line styles (solid vs dashed)
-    fig.legend(
-        handles,
-        labels,
-        loc="lower center",
-        bbox_to_anchor=(0.5, -0.02),
-        ncol=legend_cols,
-        fontsize=9,
-        frameon=False,
-        title="Line styles: Laplace (solid), Gaussian (dashed)",
-        title_fontsize=10,
-    )
-    fig.tight_layout(rect=[0, 0.06, 1, 0.94])
+
+    if legend_ax is not None:
+        legend_ax.set_title(
+            "Legends for all plots\nSolid: Laplace\nDashed: Gaussian",
+            fontsize=12, pad=8,
+        )
+        legend_handles = [
+            Line2D([0], [0], color=colors[idx], linewidth=2, linestyle="-")
+            for idx in range(len(epsilons))
+        ]
+        legend_labels = [f"ε = {eps:g}" for eps in epsilons]
+        legend_ax.legend(
+            legend_handles,
+            legend_labels,
+            loc="center",
+            frameon=False,
+            fontsize=10,
+            handlelength=2.5,
+        )
+        fig.tight_layout(rect=[0, 0, 1, 0.94])
+    else:
+        handles, labels = plot_axes[0].get_legend_handles_labels()
+        fig.legend(
+            handles,
+            labels,
+            loc="lower center",
+            bbox_to_anchor=(0.5, -0.02),
+            ncol=len(epsilons),
+            fontsize=9,
+            frameon=False,
+            title="Line styles: Laplace (solid), Gaussian (dashed)",
+            title_fontsize=10,
+        )
+        fig.tight_layout(rect=[0, 0.06, 1, 0.94])
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=180, bbox_inches="tight")
     plt.close(fig)
@@ -214,20 +262,42 @@ def render_figure_epsilon_fixed(
             "chebyshev_T9": "Chebyshev T9",
         }
     else:
-        poly_names = ["quadratic", "cubic", "cubic_coeffs", "chebyshev_T3"]
+        poly_names = ["quadratic", 
+                      "cubic", 
+                      "quartic", 
+                      "quadratic_coeffs",
+                      "cubic_coeffs", 
+                      "quartic_coeffs", 
+                      #"chebyshev_T3", 
+                      #"chebyshev_T4",
+                      ]
+        
         poly_labels = {
-            "quadratic": "Quadratic basecase",
-            "cubic": "Cubic basecase",
-            "cubic_coeffs": "Cubic coefficients",
-            "chebyshev_T3": "Chebyshev T3",
+            "quadratic": "Baseline quadratic",
+            "cubic": "Baseline cubic",
+            "quartic": "Baseline quartic",
+            "quadratic_coeffs": "Quadratic (varied coeffs)",
+            "cubic_coeffs": "Cubic (varied coeffs)",
+            "quartic_coeffs": "Quartic (varied coeffs)",
+            #"chebyshev_T3": "Chebyshev (degree 3)",
+            #"chebyshev_T4": "Chebyshev (degree 4)",
         }
-    
+    n_functions = len(poly_names)
     n_eps = len(epsilons)
-    if n_eps == 5:
+    # Special layout for 5 epsilons:
+    # 5 plots in a 3 x 2 grid with the last cell reserved for a shared legend
+    if n_eps == 5: 
         fig, axes = plt.subplots(3, 2, figsize=(14, 12), sharex=True, sharey=False)
         flat_axes = np.asarray(axes).ravel()
         plot_axes = flat_axes[:5]
         legend_ax = flat_axes[5]
+    # Special layout for 3 epsilons: 
+    # 3 plots in a 3 x 1 grid 
+    elif n_eps == 3:
+        fig, axes = plt.subplots(3, 1, figsize=(14, 12), sharex=True, sharey=False)
+        flat_axes = np.asarray(axes).ravel()
+        plot_axes = flat_axes[:3]
+        legend_ax = None
     else:
         fig, axes = plt.subplots(2, 2, figsize=(14, 10), sharex=True, sharey=False)
         flat_axes = np.asarray(axes).ravel()
@@ -252,7 +322,21 @@ def render_figure_epsilon_fixed(
     }
 
     # Color map for polynomials
-    poly_colors = plt.cm.tab10(np.linspace(0, 1, len(poly_names)))
+    if n_functions == 6: # define colors for 6 epsilons
+        #             "quadratic", "cubic", "quartic", "quadratic_coeffs", "cubic_coeffs", "quartic_coeffs"
+        #poly_colors = ["#3f4ada", "#37afde", "#1fcbc2", "#db79db", "#be2da9", "#ed0b6d"]
+        #poly_colors = ["#85E4EB", "#ef66df","#F07A3F", "#2364A0", "#e20c90", "#CE4506"]
+        
+        poly_colors =[
+            "#1B4965",  # quadratic        — dark blue
+            "#9D0264",  # cubic            — dark red
+            "#BC5800",  # quartic          — dark orange
+            "#62B6CB",  # quadratic_coeffs — light blue
+            "#E676E4",  # cubic_coeffs     — light red/pink
+            "#F4A259",  # quartic_coeffs   — light orange
+        ]
+    else:
+        poly_colors = plt.cm.tab10(np.arange(len(poly_names)) / 10)
 
     # place legend in empty subplot if available, otherwise rely on shared legend below the grid
     if legend_ax is not None:
@@ -270,6 +354,24 @@ def render_figure_epsilon_fixed(
             frameon=False,
             fontsize=10,
             handlelength=2.5,
+        )
+    else:
+        # Add a shared legend below the grid
+        legend_handles = [
+            Line2D([0], [0], color=poly_colors[idx], linewidth=2, linestyle="-")
+            for idx in range(len(poly_names))
+        ]
+        legend_labels = [poly_labels[poly_name] for poly_name in poly_names]
+        fig.legend(
+            legend_handles,
+            legend_labels,
+            loc="upper center",            # anchor the legend's TOP-center...
+            bbox_to_anchor=(0.5, 0.01),    # ...at y=0.06 (inside the reserved strip)
+            ncol=2,
+            fontsize=9,
+            frameon=False,
+            title="Line styles: Laplace (solid), Gaussian (dashed)",
+            title_fontsize=10,
         )
     
     for ax, epsilon_value in zip(plot_axes, epsilons):
@@ -332,20 +434,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--q-min",
         type=float,
-        default=-1.5,
+        default=-10.0,
         help="Lower q bound for the presentation figure",
     )
     parser.add_argument(
         "--q-max",
         type=float,
-        default=1.5,
+        default=10.0,
         help="Upper q bound for the presentation figure",
     )
     parser.add_argument(
         "--epsilons",
         type=float,
         nargs="+",
-        default=[0.1, 0.5, 1.5, 3.0, 5.0],
+        default=[0.5, 3.0, 5.0],
 
         help="Epsilon values to draw as curves in each panel",
     )
@@ -362,109 +464,3 @@ def parse_args() -> argparse.Namespace:
         help="Gaussian delta parameter placeholder, included for consistency",
     )
     return parser.parse_args()
-
-
-def main() -> None:
-    args = parse_args()
-    reports = build_reports()
-    out_dir = Path(args.output_dir)
-
-    # Set 1: Fixed polynomial per plot (normal-degree and higher-degree)
-    normal_variance_path = out_dir / "symbolic_presentation_normal_polynomial_overlay_variance.png"
-    normal_mse_path = out_dir / "symbolic_presentation_normal_polynomial_overlay_mse.png"
-    higher_variance_path = out_dir / "symbolic_presentation_higher_polynomial_overlay_variance.png"
-    higher_mse_path = out_dir / "symbolic_presentation_higher_polynomial_overlay_mse.png"
-
-    render_figure_polynomial_overlay(
-        reports=reports,
-        metric="variance_ratio",
-        q_range=(args.q_min, args.q_max),
-        epsilons=args.epsilons,
-        delta_value=args.delta,
-        Delta_value=args.Delta,
-        out_path=normal_variance_path,
-        is_higher_degree=False,
-    )
-    render_figure_polynomial_overlay(
-        reports=reports,
-        metric="mse_ratio",
-        q_range=(args.q_min, args.q_max),
-        epsilons=args.epsilons,
-        delta_value=args.delta,
-        Delta_value=args.Delta,
-        out_path=normal_mse_path,
-        is_higher_degree=False,
-    )
-    render_figure_polynomial_overlay(
-        reports=reports,
-        metric="variance_ratio",
-        q_range=(args.q_min, args.q_max),
-        epsilons=args.epsilons,
-        delta_value=args.delta,
-        Delta_value=args.Delta,
-        out_path=higher_variance_path,
-        is_higher_degree=True,
-    )
-    render_figure_polynomial_overlay(
-        reports=reports,
-        metric="mse_ratio",
-        q_range=(args.q_min, args.q_max),
-        epsilons=args.epsilons,
-        delta_value=args.delta,
-        Delta_value=args.Delta,
-        out_path=higher_mse_path,
-        is_higher_degree=True,
-    )
-
-    # Set 2: Fixed epsilon per plot (normal-degree and higher-degree)
-    normal_eps_variance_path = out_dir / "symbolic_presentation_normal_polynomial_epsilon_variance.png"
-    normal_eps_mse_path = out_dir / "symbolic_presentation_normal_polynomial_epsilon_mse.png"
-    higher_eps_variance_path = out_dir / "symbolic_presentation_higher_polynomial_epsilon_variance.png"
-    higher_eps_mse_path = out_dir / "symbolic_presentation_higher_polynomial_epsilon_mse.png"
-
-    render_figure_epsilon_fixed(
-        reports=reports,
-        metric="variance_ratio",
-        q_range=(args.q_min, args.q_max),
-        epsilons=args.epsilons,
-        delta_value=args.delta,
-        Delta_value=args.Delta,
-        out_path=normal_eps_variance_path,
-        is_higher_degree=False,
-    )
-    render_figure_epsilon_fixed(
-        reports=reports,
-        metric="mse_ratio",
-        q_range=(args.q_min, args.q_max),
-        epsilons=args.epsilons,
-        delta_value=args.delta,
-        Delta_value=args.Delta,
-        out_path=normal_eps_mse_path,
-        is_higher_degree=False,
-    )
-    render_figure_epsilon_fixed(
-        reports=reports,
-        metric="variance_ratio",
-        q_range=(args.q_min, args.q_max),
-        epsilons=args.epsilons,
-        delta_value=args.delta,
-        Delta_value=args.Delta,
-        out_path=higher_eps_variance_path,
-        is_higher_degree=True,
-    )
-    render_figure_epsilon_fixed(
-        reports=reports,
-        metric="mse_ratio",
-        q_range=(args.q_min, args.q_max),
-        epsilons=args.epsilons,
-        delta_value=args.delta,
-        Delta_value=args.Delta,
-        out_path=higher_eps_mse_path,
-        is_higher_degree=True,
-    )
-
-    print(f"Saved 8 presentation figures in: {out_dir}")
-
-
-if __name__ == "__main__":
-    main()

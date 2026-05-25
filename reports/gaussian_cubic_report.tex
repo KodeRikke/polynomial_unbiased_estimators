@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage{breqn}
+\allowdisplaybreaks
+\begin{document}
+\section*{Gaussian Cubic Function Report}
+\section*{Polynomial}
+\begin{dmath*}
+f(q) = a q^{3} + b q^{2} + c q + d
+\end{dmath*}
+\section*{Naive}
+\begin{dmath*}
+g_{\mathrm{naive}}(X) = X^{3} a + X^{2} b + X c + d
+\end{dmath*}
+\begin{dmath*}
+\mathbb{E}[g_{\mathrm{naive}}(X)] = a q^{3} + 3 a q \sigma^{2} + b q^{2} + b \sigma^{2} + c q + d
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Var}(g_{\mathrm{naive}}(X)) = \sigma^{2} \left(9 a^{2} q^{4} + 36 a^{2} q^{2} \sigma^{2} + 15 a^{2} \sigma^{4} + 12 a b q^{3} + 24 a b q \sigma^{2} + 6 a c q^{2} + 6 a c \sigma^{2} + 4 b^{2} q^{2} + 2 b^{2} \sigma^{2} + 4 b c q + c^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{MSE}(g_{\mathrm{naive}}) = \sigma^{2} \left(9 a^{2} q^{4} + 45 a^{2} q^{2} \sigma^{2} + 15 a^{2} \sigma^{4} + 12 a b q^{3} + 30 a b q \sigma^{2} + 6 a c q^{2} + 6 a c \sigma^{2} + 4 b^{2} q^{2} + 3 b^{2} \sigma^{2} + 4 b c q + c^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Bias}(g_{\mathrm{naive}}) = \sigma^{2} \left(3 a q + b\right)
+\end{dmath*}
+\section*{Unbiased}
+\begin{dmath*}
+g_{\mathrm{unb}}(X) = X^{3} a + X^{2} b - 3 X a \sigma^{2} + X c - b \sigma^{2} + d
+\end{dmath*}
+\begin{dmath*}
+\mathbb{E}[g_{\mathrm{unb}}(X)] = a q^{3} + b q^{2} + c q + d
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Var}(g_{\mathrm{unb}}(X)) = \sigma^{2} \left(9 a^{2} q^{4} + 18 a^{2} q^{2} \sigma^{2} + 6 a^{2} \sigma^{4} + 12 a b q^{3} + 12 a b q \sigma^{2} + 6 a c q^{2} + 4 b^{2} q^{2} + 2 b^{2} \sigma^{2} + 4 b c q + c^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{MSE}(g_{\mathrm{unb}}) = \sigma^{2} \left(9 a^{2} q^{4} + 18 a^{2} q^{2} \sigma^{2} + 6 a^{2} \sigma^{4} + 12 a b q^{3} + 12 a b q \sigma^{2} + 6 a c q^{2} + 4 b^{2} q^{2} + 2 b^{2} \sigma^{2} + 4 b c q + c^{2}\right)
+\end{dmath*}
+\section*{Comparison}
+\begin{dmath*}
+\text{mean gap} = \sigma^{2} \left(- 3 a q - b\right)
+\end{dmath*}
+\begin{dmath*}
+\text{variance gap} = 3 a \sigma^{4} \left(- 6 a q^{2} - 3 a \sigma^{2} - 4 b q - 2 c\right)
+\end{dmath*}
+\begin{dmath*}
+\text{MSE gap} = \sigma^{4} \left(- 27 a^{2} q^{2} - 9 a^{2} \sigma^{2} - 18 a b q - 6 a c - b^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Bias}(g_{\mathrm{naive}})^2 = \sigma^{4} \left(3 a q + b\right)^{2}
+\end{dmath*}
+\end{document}

@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage{breqn}
+\allowdisplaybreaks
+\begin{document}
+\section*{Gaussian Fourth Degree Function Report}
+\section*{Polynomial}
+\begin{dmath*}
+f(q) = a q^{4} + b q^{3} + c q^{2} + d q + e
+\end{dmath*}
+\section*{Naive}
+\begin{dmath*}
+g_{\mathrm{naive}}(X) = X^{4} a + X^{3} b + X^{2} c + X d + e
+\end{dmath*}
+\begin{dmath*}
+\mathbb{E}[g_{\mathrm{naive}}(X)] = a q^{4} + 6 a q^{2} \sigma^{2} + 3 a \sigma^{4} + b q^{3} + 3 b q \sigma^{2} + c q^{2} + c \sigma^{2} + d q + e
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Var}(g_{\mathrm{naive}}(X)) = \sigma^{2} \left(16 a^{2} q^{6} + 168 a^{2} q^{4} \sigma^{2} + 384 a^{2} q^{2} \sigma^{4} + 96 a^{2} \sigma^{6} + 24 a b q^{5} + 168 a b q^{3} \sigma^{2} + 192 a b q \sigma^{4} + 16 a c q^{4} + 72 a c q^{2} \sigma^{2} + 24 a c \sigma^{4} + 8 a d q^{3} + 24 a d q \sigma^{2} + 9 b^{2} q^{4} + 36 b^{2} q^{2} \sigma^{2} + 15 b^{2} \sigma^{4} + 12 b c q^{3} + 24 b c q \sigma^{2} + 6 b d q^{2} + 6 b d \sigma^{2} + 4 c^{2} q^{2} + 2 c^{2} \sigma^{2} + 4 c d q + d^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{MSE}(g_{\mathrm{naive}}) = \sigma^{2} \left(16 a^{2} q^{6} + 204 a^{2} q^{4} \sigma^{2} + 420 a^{2} q^{2} \sigma^{4} + 105 a^{2} \sigma^{6} + 24 a b q^{5} + 204 a b q^{3} \sigma^{2} + 210 a b q \sigma^{4} + 16 a c q^{4} + 84 a c q^{2} \sigma^{2} + 30 a c \sigma^{4} + 8 a d q^{3} + 24 a d q \sigma^{2} + 9 b^{2} q^{4} + 45 b^{2} q^{2} \sigma^{2} + 15 b^{2} \sigma^{4} + 12 b c q^{3} + 30 b c q \sigma^{2} + 6 b d q^{2} + 6 b d \sigma^{2} + 4 c^{2} q^{2} + 3 c^{2} \sigma^{2} + 4 c d q + d^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Bias}(g_{\mathrm{naive}}) = \sigma^{2} \left(6 a q^{2} + 3 a \sigma^{2} + 3 b q + c\right)
+\end{dmath*}
+\section*{Unbiased}
+\begin{dmath*}
+g_{\mathrm{unb}}(X) = X^{4} a + X^{3} b - 6 X^{2} a \sigma^{2} + X^{2} c - 3 X b \sigma^{2} + X d + 3 a \sigma^{4} - c \sigma^{2} + e
+\end{dmath*}
+\begin{dmath*}
+\mathbb{E}[g_{\mathrm{unb}}(X)] = a q^{4} + b q^{3} + c q^{2} + d q + e
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Var}(g_{\mathrm{unb}}(X)) = \sigma^{2} \left(16 a^{2} q^{6} + 72 a^{2} q^{4} \sigma^{2} + 96 a^{2} q^{2} \sigma^{4} + 24 a^{2} \sigma^{6} + 24 a b q^{5} + 72 a b q^{3} \sigma^{2} + 48 a b q \sigma^{4} + 16 a c q^{4} + 24 a c q^{2} \sigma^{2} + 8 a d q^{3} + 9 b^{2} q^{4} + 18 b^{2} q^{2} \sigma^{2} + 6 b^{2} \sigma^{4} + 12 b c q^{3} + 12 b c q \sigma^{2} + 6 b d q^{2} + 4 c^{2} q^{2} + 2 c^{2} \sigma^{2} + 4 c d q + d^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{MSE}(g_{\mathrm{unb}}) = \sigma^{2} \left(16 a^{2} q^{6} + 72 a^{2} q^{4} \sigma^{2} + 96 a^{2} q^{2} \sigma^{4} + 24 a^{2} \sigma^{6} + 24 a b q^{5} + 72 a b q^{3} \sigma^{2} + 48 a b q \sigma^{4} + 16 a c q^{4} + 24 a c q^{2} \sigma^{2} + 8 a d q^{3} + 9 b^{2} q^{4} + 18 b^{2} q^{2} \sigma^{2} + 6 b^{2} \sigma^{4} + 12 b c q^{3} + 12 b c q \sigma^{2} + 6 b d q^{2} + 4 c^{2} q^{2} + 2 c^{2} \sigma^{2} + 4 c d q + d^{2}\right)
+\end{dmath*}
+\section*{Comparison}
+\begin{dmath*}
+\text{mean gap} = \sigma^{2} \left(- 6 a q^{2} - 3 a \sigma^{2} - 3 b q - c\right)
+\end{dmath*}
+\begin{dmath*}
+\text{variance gap} = \sigma^{4} \left(- 96 a^{2} q^{4} - 288 a^{2} q^{2} \sigma^{2} - 72 a^{2} \sigma^{4} - 96 a b q^{3} - 144 a b q \sigma^{2} - 48 a c q^{2} - 24 a c \sigma^{2} - 24 a d q - 18 b^{2} q^{2} - 9 b^{2} \sigma^{2} - 12 b c q - 6 b d\right)
+\end{dmath*}
+\begin{dmath*}
+\text{MSE gap} = \sigma^{4} \left(- 132 a^{2} q^{4} - 324 a^{2} q^{2} \sigma^{2} - 81 a^{2} \sigma^{4} - 132 a b q^{3} - 162 a b q \sigma^{2} - 60 a c q^{2} - 30 a c \sigma^{2} - 24 a d q - 27 b^{2} q^{2} - 9 b^{2} \sigma^{2} - 18 b c q - 6 b d - c^{2}\right)
+\end{dmath*}
+\begin{dmath*}
+\operatorname{Bias}(g_{\mathrm{naive}})^2 = \sigma^{4} \left(6 a q^{2} + 3 a \sigma^{2} + 3 b q + c\right)^{2}
+\end{dmath*}
+\end{document}

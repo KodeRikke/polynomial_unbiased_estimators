@@ -6,48 +6,48 @@
 \section*{polynomial_report}
 \section*{Polynomial}
 \begin{dmath*}
-f(q) = a q^{3} + b q^{2} + c q + d
+f(q) = 3 q^{3} + 7 q^{2} + 2 q + 1
 \end{dmath*}
 \section*{Naive}
 \begin{dmath*}
-g_{\mathrm{naive}}(X) = X^{3} a + X^{2} b + X c + d
+g_{\mathrm{naive}}(X) = 3 X^{3} + 7 X^{2} + 2 X + 1
 \end{dmath*}
 \begin{dmath*}
-\mathbb{E}[g_{\mathrm{naive}}(X)] = a q^{3} + b q^{2} + 2 {\frac{\Delta}{\epsilon}}^{2} \left(3 a q + b\right) + c q + d
+\mathbb{E}[g_{\mathrm{naive}}(X)] = {\frac{\Delta}{\epsilon}}^{2} \left(18 q + 14\right) + 3 q^{3} + 7 q^{2} + 2 q + 1
 \end{dmath*}
 \begin{dmath*}
-\operatorname{Var}(g_{\mathrm{naive}}(X)) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(360 a^{2} {\frac{\Delta}{\epsilon}}^{4} + 9 a^{2} q^{4} + 12 a b q^{3} + 6 a c q^{2} + 4 b^{2} q^{2} + 4 b c q + 2 {\frac{\Delta}{\epsilon}}^{2} \left(81 a^{2} q^{2} + 54 a b q + 12 a c + 5 b^{2}\right) + c^{2}\right)
+\operatorname{Var}(g_{\mathrm{naive}}(X)) = {\frac{\Delta}{\epsilon}}^{2} \left(6480 {\frac{\Delta}{\epsilon}}^{4} + 2 {\frac{\Delta}{\epsilon}}^{2} \left(1458 q^{2} + 2268 q + 634\right) + 162 q^{4} + 504 q^{3} + 464 q^{2} + 112 q + 8\right)
 \end{dmath*}
 \begin{dmath*}
-\operatorname{MSE}(g_{\mathrm{naive}}) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(360 a^{2} {\frac{\Delta}{\epsilon}}^{4} + 9 a^{2} q^{4} + 12 a b q^{3} + 6 a c q^{2} + 4 b^{2} q^{2} + 4 b c q + 12 {\frac{\Delta}{\epsilon}}^{2} \left(15 a^{2} q^{2} + 10 a b q + 2 a c + b^{2}\right) + c^{2}\right)
+\operatorname{MSE}(g_{\mathrm{naive}}) = {\frac{\Delta}{\epsilon}}^{2} \left(6480 {\frac{\Delta}{\epsilon}}^{4} + 2 {\frac{\Delta}{\epsilon}}^{2} \left(1620 q^{2} + 2520 q + 732\right) + 162 q^{4} + 504 q^{3} + 464 q^{2} + 112 q + 8\right)
 \end{dmath*}
 \begin{dmath*}
-\operatorname{Bias}(g_{\mathrm{naive}}) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(3 a q + b\right)
+\operatorname{Bias}(g_{\mathrm{naive}}) = {\frac{\Delta}{\epsilon}}^{2} \left(18 q + 14\right)
 \end{dmath*}
 \section*{Unbiased}
 \begin{dmath*}
-g_{\mathrm{unb}}(X) = X^{3} a + X^{2} b + X c - 2 {\frac{\Delta}{\epsilon}}^{2} \left(3 X a + b\right) + d
+g_{\mathrm{unb}}(X) = 3 X^{3} + 7 X^{2} + 2 X + {\frac{\Delta}{\epsilon}}^{2} \left(- 18 X - 14\right) + 1
 \end{dmath*}
 \begin{dmath*}
-\mathbb{E}[g_{\mathrm{unb}}(X)] = a q^{3} + b q^{2} + c q + d
+\mathbb{E}[g_{\mathrm{unb}}(X)] = 3 q^{3} + 7 q^{2} + 2 q + 1
 \end{dmath*}
 \begin{dmath*}
-\operatorname{Var}(g_{\mathrm{unb}}(X)) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(252 a^{2} {\frac{\Delta}{\epsilon}}^{4} + 9 a^{2} q^{4} + 12 a b q^{3} + 6 a c q^{2} + 4 b^{2} q^{2} + 4 b c q + 2 {\frac{\Delta}{\epsilon}}^{2} \left(63 a^{2} q^{2} + 42 a b q + 6 a c + 5 b^{2}\right) + c^{2}\right)
+\operatorname{Var}(g_{\mathrm{unb}}(X)) = {\frac{\Delta}{\epsilon}}^{2} \left(4536 {\frac{\Delta}{\epsilon}}^{4} + 2 {\frac{\Delta}{\epsilon}}^{2} \left(1134 q^{2} + 1764 q + 562\right) + 162 q^{4} + 504 q^{3} + 464 q^{2} + 112 q + 8\right)
 \end{dmath*}
 \begin{dmath*}
-\operatorname{MSE}(g_{\mathrm{unb}}) = 2 {\frac{\Delta}{\epsilon}}^{2} \left(252 a^{2} {\frac{\Delta}{\epsilon}}^{4} + 9 a^{2} q^{4} + 12 a b q^{3} + 6 a c q^{2} + 4 b^{2} q^{2} + 4 b c q + 2 {\frac{\Delta}{\epsilon}}^{2} \left(63 a^{2} q^{2} + 42 a b q + 6 a c + 5 b^{2}\right) + c^{2}\right)
+\operatorname{MSE}(g_{\mathrm{unb}}) = {\frac{\Delta}{\epsilon}}^{2} \left(4536 {\frac{\Delta}{\epsilon}}^{4} + 2 {\frac{\Delta}{\epsilon}}^{2} \left(1134 q^{2} + 1764 q + 562\right) + 162 q^{4} + 504 q^{3} + 464 q^{2} + 112 q + 8\right)
 \end{dmath*}
 \section*{Comparison}
 \begin{dmath*}
-\text{mean gap} = - 2 {\frac{\Delta}{\epsilon}}^{2} \left(3 a q + b\right)
+\text{mean gap} = {\frac{\Delta}{\epsilon}}^{2} \left(- 18 q - 14\right)
 \end{dmath*}
 \begin{dmath*}
-\text{variance gap} = - 24 a {\frac{\Delta}{\epsilon}}^{4} \left(9 a {\frac{\Delta}{\epsilon}}^{2} + 3 a q^{2} + 2 b q + c\right)
+\text{variance gap} = {\frac{\Delta}{\epsilon}}^{4} \left(- 1944 {\frac{\Delta}{\epsilon}}^{2} - 648 q^{2} - 1008 q - 144\right)
 \end{dmath*}
 \begin{dmath*}
-\text{MSE gap} = - 4 {\frac{\Delta}{\epsilon}}^{4} \left(54 a^{2} {\frac{\Delta}{\epsilon}}^{2} + 27 a^{2} q^{2} + 18 a b q + 6 a c + b^{2}\right)
+\text{MSE gap} = {\frac{\Delta}{\epsilon}}^{4} \left(- 1944 {\frac{\Delta}{\epsilon}}^{2} - 972 q^{2} - 1512 q - 340\right)
 \end{dmath*}
 \begin{dmath*}
-\operatorname{Bias}(g_{\mathrm{naive}})^2 = 4 {\frac{\Delta}{\epsilon}}^{4} \left(9 a^{2} q^{2} + 6 a b q + b^{2}\right)
+\operatorname{Bias}(g_{\mathrm{naive}})^2 = {\frac{\Delta}{\epsilon}}^{4} \left(324 q^{2} + 504 q + 196\right)
 \end{dmath*}
 \end{document}

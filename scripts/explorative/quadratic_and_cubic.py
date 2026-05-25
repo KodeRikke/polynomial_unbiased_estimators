@@ -1,0 +1,49 @@
+import sympy as sp
+from dp_estimators import EstimatorSystem
+from noise_models import GaussianNoiseModel, LaplaceNoiseModel
+# Define the SymPy symbols used in the polynomials
+q = sp.Symbol("q", real=True)
+a, b, c, d, e, f = sp.symbols("a b c d e f", real=True)
+
+# initialize the EstimatorSystem with the Laplace noise model and the symbolic variables
+lap_sys = EstimatorSystem(
+    noise_model=LaplaceNoiseModel(Delta="Delta", epsilon="epsilon"),
+    q="q",
+    x="X"
+)
+gauss_sys = EstimatorSystem(
+    noise_model=GaussianNoiseModel(sigma="sigma"),
+    q="q",
+    x="X"
+)
+
+# define the cubic / quadratic function f(q) = a*q**3 + b*q**2 + c*q + d / f(q) = a*q**2 ...
+# (as a sympy expression, not a Python function, since we want to analyze it symbolically)
+f_cubic = a*q**3 + b*q**2 + c*q + d
+f_quadratic = a*q**2 + b*q + c
+
+f_fourth_degree = a*q**4 + b*q**3 + c*q**2 + d*q + e
+#f_fifth_degree = a*q**5 + b*q**4 + c*q**3 + d*q**2 + e*q + f
+#f_cubic_basecase = f_cubic.subs({a:1, b: 0, c: 0, d: 0}) 
+
+def main():
+
+    summary_cubic = lap_sys.summary_report(f_cubic, notation="beta") # use the beta mode for terminal summary, where beta = Delta/epsilon is easy to read
+    print(summary_cubic)
+    summary_quadratic = lap_sys.summary_report(f_quadratic, notation="beta")
+    print(summary_quadratic)
+    #summary_cubic_basecase = lap_sys.summary_report(f_cubic_basecase, notation="beta")
+    #print(summary_cubic_basecase)
+
+    lap_sys.pdf_report(f_cubic, "cubic_report", title="Cubic Function Report")#, compact=True) # use compact mode for the LaTeX report, to remove paranthesis basically
+    lap_sys.pdf_report(f_quadratic, "quadratic_report", title="Quadratic Function Report")#, compact=True)
+    #lap_sys.pdf_report(f_cubic_basecase, "cubic_basecase_report", title="Cubic Base Case Report")#, compact=True)
+
+    lap_sys.pdf_report(f_fourth_degree, "fourth_degree_report", title="Fourth Degree Function Report")#, compact=True)
+    #lap_sys.pdf_report(f_fifth_degree, "fifth_degree_report", title="Fifth Degree Function Report")#, compact=True)
+
+    gauss_sys.pdf_report(f_cubic, "gaussian_cubic_report", title="Gaussian Cubic Function Report")#, compact=True)
+    gauss_sys.pdf_report(f_quadratic, "gaussian_quadratic_report", title="Gaussian Quadratic Function Report")#, compact=True)
+    gauss_sys.pdf_report(f_fourth_degree, "gaussian_fourth_degree_report", title="Gaussian Fourth Degree Function Report")#, compact=True)
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,65 @@
+Cubic Safe-Band Analysis
+====================================================================================================
+
+Theory:
+  f(x) = ax³ + bx² + cx + d,  s = Delta/epsilon
+  M = 54a²s² - 2b² + 6ac  (minimum of MSE inner term over x)
+  Safe zone exists iff M < 0, i.e. s < sqrt((b² - 3ac)/(27a²))
+  Center: x* = -b/(3a)
+  MSE safe band:  x* ± sqrt(-M/(27a²))
+  Var safe band:  x* ± sqrt(-M/(18a²))  [always wider]
+  Joint safe band = MSE band  (narrower, contained in var band)
+
+Configuration:
+  a values: [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+  b values: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+  c values: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+  epsilon values: [0.1, 0.5, 1.0, 2.0, 5.0, 7.0, 10.0]
+  Delta: 1.0
+
+Results:
+  Total (a, b, c, s) combinations: 8470
+  Combinations with safe zone (M < 0): 2304 (27.2%)
+
+Sample safe combinations (joint band widths):
+────────────────────────────────────────────────────────────────────────────────────────────────────
+  (a=-1, b=-5, c=+5) s=0.1: M=-79.46  x*=-1.667  joint=[-3.382, 0.04884]  half-width=1.716  var-hw=2.101
+  (a=-1, b=+5, c=+5) s=0.1: M=-79.46  x*=1.667  joint=[-0.04884, 3.382]  half-width=1.716  var-hw=2.101
+  (a=+1, b=-5, c=-5) s=0.1: M=-79.46  x*=1.667  joint=[-0.04884, 3.382]  half-width=1.716  var-hw=2.101
+  (a=+1, b=+5, c=-5) s=0.1: M=-79.46  x*=-1.667  joint=[-3.382, 0.04884]  half-width=1.716  var-hw=2.101
+  (a=-1, b=-5, c=+5) s=0.1429: M=-78.9  x*=-1.667  joint=[-3.376, 0.04276]  half-width=1.709  var-hw=2.094
+  (a=-1, b=+5, c=+5) s=0.1429: M=-78.9  x*=1.667  joint=[-0.04276, 3.376]  half-width=1.709  var-hw=2.094
+  (a=+1, b=-5, c=-5) s=0.1429: M=-78.9  x*=1.667  joint=[-0.04276, 3.376]  half-width=1.709  var-hw=2.094
+  (a=+1, b=+5, c=-5) s=0.1429: M=-78.9  x*=-1.667  joint=[-3.376, 0.04276]  half-width=1.709  var-hw=2.094
+  (a=-1, b=-5, c=+5) s=0.2: M=-77.84  x*=-1.667  joint=[-3.365, 0.03126]  half-width=1.698  var-hw=2.08
+  (a=-1, b=+5, c=+5) s=0.2: M=-77.84  x*=1.667  joint=[-0.03126, 3.365]  half-width=1.698  var-hw=2.08
+  (a=+1, b=-5, c=-5) s=0.2: M=-77.84  x*=1.667  joint=[-0.03126, 3.365]  half-width=1.698  var-hw=2.08
+  (a=+1, b=+5, c=-5) s=0.2: M=-77.84  x*=-1.667  joint=[-3.365, 0.03126]  half-width=1.698  var-hw=2.08
+  (a=-1, b=-5, c=+4) s=0.1: M=-73.46  x*=-1.667  joint=[-3.316, -0.0172]  half-width=1.649  var-hw=2.02
+  (a=-1, b=+5, c=+4) s=0.1: M=-73.46  x*=1.667  joint=[0.0172, 3.316]  half-width=1.649  var-hw=2.02
+  (a=+1, b=-5, c=-4) s=0.1: M=-73.46  x*=1.667  joint=[0.0172, 3.316]  half-width=1.649  var-hw=2.02
+  (a=+1, b=+5, c=-4) s=0.1: M=-73.46  x*=-1.667  joint=[-3.316, -0.0172]  half-width=1.649  var-hw=2.02
+  (a=-1, b=-5, c=+4) s=0.1429: M=-72.9  x*=-1.667  joint=[-3.31, -0.02352]  half-width=1.643  var-hw=2.012
+  (a=-1, b=+5, c=+4) s=0.1429: M=-72.9  x*=1.667  joint=[0.02352, 3.31]  half-width=1.643  var-hw=2.012
+  (a=+1, b=-5, c=-4) s=0.1429: M=-72.9  x*=1.667  joint=[0.02352, 3.31]  half-width=1.643  var-hw=2.012
+  (a=+1, b=+5, c=-4) s=0.1429: M=-72.9  x*=-1.667  joint=[-3.31, -0.02352]  half-width=1.643  var-hw=2.012
+  (a=-1, b=-5, c=+4) s=0.2: M=-71.84  x*=-1.667  joint=[-3.298, -0.03549]  half-width=1.631  var-hw=1.998
+  (a=-1, b=+5, c=+4) s=0.2: M=-71.84  x*=1.667  joint=[0.03549, 3.298]  half-width=1.631  var-hw=1.998
+  (a=+1, b=-5, c=-4) s=0.2: M=-71.84  x*=1.667  joint=[0.03549, 3.298]  half-width=1.631  var-hw=1.998
+  (a=+1, b=+5, c=-4) s=0.2: M=-71.84  x*=-1.667  joint=[-3.298, -0.03549]  half-width=1.631  var-hw=1.998
+  (a=-1, b=-5, c=+3) s=0.1: M=-67.46  x*=-1.667  joint=[-3.247, -0.086]  half-width=1.581  var-hw=1.936
+  (a=-1, b=+5, c=+3) s=0.1: M=-67.46  x*=1.667  joint=[0.086, 3.247]  half-width=1.581  var-hw=1.936
+  (a=+1, b=-5, c=-3) s=0.1: M=-67.46  x*=1.667  joint=[0.086, 3.247]  half-width=1.581  var-hw=1.936
+  (a=+1, b=+5, c=-3) s=0.1: M=-67.46  x*=-1.667  joint=[-3.247, -0.086]  half-width=1.581  var-hw=1.936
+  (a=-1, b=-5, c=+3) s=0.1429: M=-66.9  x*=-1.667  joint=[-3.241, -0.09259]  half-width=1.574  var-hw=1.928
+  (a=-1, b=+5, c=+3) s=0.1429: M=-66.9  x*=1.667  joint=[0.09259, 3.241]  half-width=1.574  var-hw=1.928
+  (a=+1, b=-5, c=-3) s=0.1429: M=-66.9  x*=1.667  joint=[0.09259, 3.241]  half-width=1.574  var-hw=1.928
+  (a=+1, b=+5, c=-3) s=0.1429: M=-66.9  x*=-1.667  joint=[-3.241, -0.09259]  half-width=1.574  var-hw=1.928
+  (a=-1, b=-5, c=+5) s=0.5: M=-66.5  x*=-1.667  joint=[-3.236, -0.09728]  half-width=1.569  var-hw=1.922
+  (a=-1, b=+5, c=+5) s=0.5: M=-66.5  x*=1.667  joint=[0.09728, 3.236]  half-width=1.569  var-hw=1.922
+  (a=+1, b=-5, c=-5) s=0.5: M=-66.5  x*=1.667  joint=[0.09728, 3.236]  half-width=1.569  var-hw=1.922
+  (a=+1, b=+5, c=-5) s=0.5: M=-66.5  x*=-1.667  joint=[-3.236, -0.09728]  half-width=1.569  var-hw=1.922
+  (a=-1, b=-5, c=+3) s=0.2: M=-65.84  x*=-1.667  joint=[-3.228, -0.1051]  half-width=1.562  var-hw=1.913
+  (a=-1, b=+5, c=+3) s=0.2: M=-65.84  x*=1.667  joint=[0.1051, 3.228]  half-width=1.562  var-hw=1.913
+  (a=+1, b=-5, c=-3) s=0.2: M=-65.84  x*=1.667  joint=[0.1051, 3.228]  half-width=1.562  var-hw=1.913
+  (a=+1, b=+5, c=-3) s=0.2: M=-65.84  x*=-1.667  joint=[-3.228, -0.1051]  half-width=1.562  var-hw=1.913
