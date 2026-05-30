@@ -13,41 +13,41 @@ f(q) = 3 q^{3} + 7 q^{2} + 2 q + 1
 g_{\mathrm{naive}}(X) = 3 X^{3} + 7 X^{2} + 2 X + 1
 \end{dmath*}
 \begin{dmath*}
-\mathbb{E}[g_{\mathrm{naive}}(X)] = {\frac{\Delta}{\epsilon}}^{2} \left(18 q + 14\right) + 3 q^{3} + 7 q^{2} + 2 q + 1
+\mathbb{E}[g_{\mathrm{naive}}(X)] = 3 q^{3} + 7 q^{2} + 4.0 q + 2.55555555555556
 \end{dmath*}
 \begin{dmath*}
-\operatorname{Var}(g_{\mathrm{naive}}(X)) = {\frac{\Delta}{\epsilon}}^{2} \left(6480 {\frac{\Delta}{\epsilon}}^{4} + 2 {\frac{\Delta}{\epsilon}}^{2} \left(1458 q^{2} + 2268 q + 634\right) + 162 q^{4} + 504 q^{3} + 464 q^{2} + 112 q + 8\right)
+\operatorname{Var}(g_{\mathrm{naive}}(X)) = 18.0 q^{4} + 56.0 q^{3} + 87.5555555555555 q^{2} + 68.4444444444444 q + 25.4320987654321
 \end{dmath*}
 \begin{dmath*}
-\operatorname{MSE}(g_{\mathrm{naive}}) = {\frac{\Delta}{\epsilon}}^{2} \left(6480 {\frac{\Delta}{\epsilon}}^{4} + 2 {\frac{\Delta}{\epsilon}}^{2} \left(1620 q^{2} + 2520 q + 732\right) + 162 q^{4} + 504 q^{3} + 464 q^{2} + 112 q + 8\right)
+\operatorname{MSE}(g_{\mathrm{naive}}) = 18.0 q^{4} + 56.0 q^{3} + 91.5555555555555 q^{2} + 74.6666666666667 q + 27.8518518518518
 \end{dmath*}
 \begin{dmath*}
-\operatorname{Bias}(g_{\mathrm{naive}}) = {\frac{\Delta}{\epsilon}}^{2} \left(18 q + 14\right)
+\operatorname{Bias}(g_{\mathrm{naive}}) = 2.0 q + 1.55555555555556
 \end{dmath*}
 \section*{Unbiased}
 \begin{dmath*}
-g_{\mathrm{unb}}(X) = 3 X^{3} + 7 X^{2} + 2 X + {\frac{\Delta}{\epsilon}}^{2} \left(- 18 X - 14\right) + 1
+g_{\mathrm{unb}}(X) = 3 X^{3} + 7 X^{2} - 0.555555555555555
 \end{dmath*}
 \begin{dmath*}
-\mathbb{E}[g_{\mathrm{unb}}(X)] = 3 q^{3} + 7 q^{2} + 2 q + 1
+\mathbb{E}[g_{\mathrm{unb}}(X)] = 3.0 {\frac{\Delta}{\epsilon}} + 3 q^{3} + 7 q^{2} + 2.0 q
 \end{dmath*}
 \begin{dmath*}
-\operatorname{Var}(g_{\mathrm{unb}}(X)) = {\frac{\Delta}{\epsilon}}^{2} \left(4536 {\frac{\Delta}{\epsilon}}^{4} + 2 {\frac{\Delta}{\epsilon}}^{2} \left(1134 q^{2} + 1764 q + 562\right) + 162 q^{4} + 504 q^{3} + 464 q^{2} + 112 q + 8\right)
+\operatorname{Var}(g_{\mathrm{unb}}(X)) = 18.0 q^{4} + 56.0 q^{3} + 79.5555555555555 q^{2} + 56.0 q + 20.9876543209876
 \end{dmath*}
 \begin{dmath*}
-\operatorname{MSE}(g_{\mathrm{unb}}) = {\frac{\Delta}{\epsilon}}^{2} \left(4536 {\frac{\Delta}{\epsilon}}^{4} + 2 {\frac{\Delta}{\epsilon}}^{2} \left(1134 q^{2} + 1764 q + 562\right) + 162 q^{4} + 504 q^{3} + 464 q^{2} + 112 q + 8\right)
+\operatorname{MSE}(g_{\mathrm{unb}}) = 18.0 q^{4} + 56.0 q^{3} + 79.5555555555555 q^{2} + 56.0 q + 20.9876543209876
 \end{dmath*}
 \section*{Comparison}
 \begin{dmath*}
-\text{mean gap} = {\frac{\Delta}{\epsilon}}^{2} \left(- 18 q - 14\right)
+\text{mean gap} = - 2.0 q - 1.55555555555556
 \end{dmath*}
 \begin{dmath*}
-\text{variance gap} = {\frac{\Delta}{\epsilon}}^{4} \left(- 1944 {\frac{\Delta}{\epsilon}}^{2} - 648 q^{2} - 1008 q - 144\right)
+\text{variance gap} = - 8.0 q^{2} - 12.4444444444444 q - 4.44444444444444
 \end{dmath*}
 \begin{dmath*}
-\text{MSE gap} = {\frac{\Delta}{\epsilon}}^{4} \left(- 1944 {\frac{\Delta}{\epsilon}}^{2} - 972 q^{2} - 1512 q - 340\right)
+\text{MSE gap} = - 12.0 q^{2} - 18.6666666666667 q - 6.8641975308642
 \end{dmath*}
 \begin{dmath*}
-\operatorname{Bias}(g_{\mathrm{naive}})^2 = {\frac{\Delta}{\epsilon}}^{4} \left(324 q^{2} + 504 q + 196\right)
+\operatorname{Bias}(g_{\mathrm{naive}})^2 = 4.0 q^{2} + 6.22222222222222 q + 2.41975308641975
 \end{dmath*}
 \end{document}

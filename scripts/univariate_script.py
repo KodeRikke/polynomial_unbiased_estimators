@@ -35,7 +35,7 @@ def create_noise_model(name: str):
     """Return instantiated noise model from string."""
     name = name.lower()
     if name == "laplace":
-        return LaplaceNoiseModel(Delta="Delta", epsilon="epsilon")
+        return LaplaceNoiseModel(Delta=1.0, epsilon=3.0)
     if name == "gaussian":
         return GaussianNoiseModel(sigma="sigma")
     raise ValueError(f"Unknown noise model '{name}'. Use 'laplace' or 'gaussian'.")
