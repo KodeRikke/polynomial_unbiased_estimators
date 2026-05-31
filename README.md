@@ -130,3 +130,10 @@ Further EstimatorContext also produces the naive estimator.
 The EstimatorAnalyzer class manages the \textit{analysis} of any of the estimators, i.e. it creates corresponding mean, variance, MSE and bias. It serves the same purpose as the "Context" in the Strategy pattern, only here the estimator and analysis of the estimator are split into two classes to avoid overloading the EstimatorContext class. 
 
 The ComparisonReport class is responsible for generating a report comparing the naive and unbiased estimators for a given polynomial function, by calculating their means, variances, MSE, bias and the gaps between them. Different specifications are possible, depending on whether the user wants to get a quick overview of the estimators of a polynomial in the terminal or rather wants to get a report printed on PDF.
+
+# Monte Carlo 
+All code related to the Monte Carlo sweeps can be found in the folder mc in the GitHub repo. The
+functionality file is the mc_validation.py-file and the functions for producing the plots are in the
+run_plots.py-files. There is a markdown-file, MC_VALIDATION.md with further specifications for
+reproducibility. All sweeps related to the quadratic are referenced as experiment_Q in the Monte
+Carlo files.
