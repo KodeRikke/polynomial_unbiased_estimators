@@ -9,22 +9,28 @@ This codebase exist as a product of the thesis "Bias-Variance Analysis of Polyno
 
 In the main folder, the main architecture lies; dp_estimators.py and noise_models.py. These files implements the main functionality of this repo, which includes:
 for any given univariate polynomial function, it is possible to: 
-\begin{itemize}
 
-    \item Compute the unbiased estimator under Laplace noise using the closed-form formula from Theorem 10 (the \texttt{LaplaceNoiseModel} class).
+- Compute the unbiased estimator under Laplace noise using the closed-form formula from Theorem 10 (the LaplaceNoiseModel class).
 
-    \item Compute the unbiased estimator under Gaussian noise by solving the linear system from the proof of Theorem 22 (the \texttt{GaussianNoiseModel} class inheriting from the \texttt{NoiseModel} class).
+- Compute the unbiased estimator under Gaussian noise by solving the linear system from the proof of Theorem 22 (the GaussianNoiseModel class inheriting from the NoiseModel class).
 
-    \item Compute the naive estimator.
+- Compute the naive estimator.
 
-    \item Compute analysis of all estimators including mean, bias (for the naive), variance and MSE. 
+- Compute analysis of all estimators including mean, bias (for the naive), variance and MSE. 
 
-    \item Compare different estimators for said function by computing gaps between analysis measures.
-    
-\end{itemize} 
+- Compare different estimators for said function by computing gaps between analysis measures.
 
-# User Guide
 
+# Quick start guide
+
+All the existing scripts in this code-base is in the separate folder scripts. For most fluent use, all future scripts should also be in this folder. For a quick start, if a user wants to analyze the estimators of a polynomial function, the file univariate_script.py has been provided. From main folder in terminal, run 
+    python -m scripts.univariate_script
+In the file, the user can change the polynomial of interest and the noise distribution needed for that case. It is clearly indicated in the main() function what needs to be changed. The script will then import the needed methods, define the symbolic SymPy symbols, initialize the EstimatorSystem with the noise and the SymPy
+values and then print the summary in terminal along with creating a .tex-file using LaTeX and compiling to a PDF report for easier readability. All files connected to the report will be added in the separate reports -folder.
+For a quick overview of the unbiased estimator for a given polynomial function, one could also use the quick_summary-script and provide the noise distribution and the function of interest, e.g. running the two commands:
+    python -m scripts.quick_summary laplace univariate a*q**4+b*q**3+c*q**2+d*q+e
+    python -m scripts.quick_summary gaussian univariate a*q**4+b*q**3+c*q**2+d*q+e
+will print the estimators' analysis in terminal.
 
 Important!
 When using the library, remember that SymPy uses SYMBOLIC expressions and functions. Therefor the symbols needs to be defined as "symbolic", i.e.:
@@ -37,7 +43,6 @@ When using the library, remember that SymPy uses SYMBOLIC expressions and functi
 And then later substituted with real values. This property is fundamental for this code base. 
 
 # Dependencies
------------------------- Dependencies ------------------------------
 
     All files: 
         sympy
@@ -101,22 +106,21 @@ And then later substituted with real values. This property is fundamental for th
         utility_plotting.format_value, utility_plotting.metric_expr, utility_plotting.evaluate_on_grid, utility_plotting.plot_curves, utility_plotting.metric_folder
 
 
------------------------ Dependencies --------------------------------
-
 # Design
+See UML diagram in the Markdown file architecture.md.
 The main modules are in the files dp_estimators.py and noise_models.py. 
-The four classes in \texttt{dp\_estimators.py} are:
-\begin{itemize}
-    \item EstimatorSystem: the main interface for users to interact with the system, providing methods for getting estimators and comparing them.
-    \item ComparisonReport: responsible for generating a report for a given polynomial function.
-    \item EstimatorContext: responsible for managing different noise/estimation strategies and providing methods for getting naive and unbiased estimators.
-    \item EstimatorAnalyzer: responsible for analyzing the properties of estimators, such as calculating mean, variance etc, using the noise model's moment calculations.
-\end{itemize}
-The three classes in \texttt{noise\_models.py} are:
-\begin{itemize}
-    \item NoiseModel: an abstract base class defining the interface for the possible noise distributions. Further it implements the linear system from Section \ref{section_GeneralNoiseDistributions} as a fallback method for the unbiased transform.
-    \item LaplaceNoiseModel: a concrete strategy class calculating the unbiased transformation of a polynomial under Laplace noise.
-    \item GaussianNoiseModel: a concrete strategy class that inherits the fallback method from the NoiseModel class.
+The four classes in dp_estimators.py are:
+
+- EstimatorSystem: the main interface for users to interact with the system, providing methods for getting estimators and comparing them.
+- ComparisonReport: responsible for generating a report for a given polynomial function.
+- EstimatorContext: responsible for managing different noise/estimation strategies and providing methods for getting naive and unbiased estimators.
+- EstimatorAnalyzer: responsible for analyzing the properties of estimators, such as calculating mean, variance etc, using the noise model's moment calculations.
+
+The three classes in noise_models.py are:
+
+- NoiseModel: an abstract base class defining the interface for the possible noise distributions. Further it implements the linear system from Calmon et al.as a fallback method for the unbiased transform.
+- LaplaceNoiseModel: a concrete strategy class calculating the unbiased transformation of a polynomial under Laplace noise.
+- GaussianNoiseModel: a concrete strategy class that inherits the fallback method from the NoiseModel class.
 \end{itemize}
 
 The code structure follows the Facade design pattern, where the EstimatorSystem class provides a simplified interface to the complex subsystem of noise models, estimation strategies, and analysis. The user of the code base only interacts with the class EstimatorSystem, and instances of the other classes are initiated through this class, except for the ComparisonReport which though still needs and instance of EstimatorSystem as input. EstimatorSystem is also responsible for delegating the comparison of estimator of a given polynomial function to the ComparisonReport class. 
@@ -127,3 +131,19 @@ Further EstimatorContext also produces the naive estimator.
 The EstimatorAnalyzer class manages the \textit{analysis} of any of the estimators, i.e. it creates corresponding mean, variance, MSE and bias. It serves the same purpose as the "Context" in the Strategy pattern, only here the estimator and analysis of the estimator are split into two classes to avoid overloading the EstimatorContext class. 
 
 The ComparisonReport class is responsible for generating a report comparing the naive and unbiased estimators for a given polynomial function, by calculating their means, variances, MSE, bias and the gaps between them. Different specifications are possible, depending on whether the user wants to get a quick overview of the estimators of a polynomial in the terminal or rather wants to get a report printed on PDF.
+
+# Scripts, Plotting, Plots and Reports
+All files related to plotting of thing in this repo is in the Plotting/ folder. Plotting things consist often of running the corresponding script in the scripts/ folder. Often files will be named "plot_X.py" in the plotting-folder and correspondingly "run_X.py" in the scripts/ folder. 
+All plots created from running the scripts will land in the plots/ folder, maybe in subfolders.
+Some script do not have corresponding "plot_x.py"-files and run other things s.a. analyzes for estimator, printing to terminal or creating .tex files. Some are also experimental scripts that serves only as explorative material doen throughout this project. Often running a script that does not have a corresponding plotting file will result in something else being created in the reports/ folder. 
+
+# Monte Carlo 
+All code related to the Monte Carlo sweeps can be found in the folder mc in the GitHub repo. The
+functionality file is the mc_validation.py-file and the functions for producing the plots are in the
+run_plots.py-files. There is a markdown-file, MC_VALIDATION.md with further specifications for
+reproducibility. All sweeps related to the quadratic are referenced as experiment_Q in the Monte
+Carlo files. All figures related to monte carlo is in the figures/ folder, seperate from all other generated files.
+
+# Calibratian for Gaussian 
+All code realted to the calibration of sigma for the Gaussian unbiased transform can be found in the folder dp_calibration/.
+The implementation is taken directly from [Balle and Wang, ICML'18]. 
