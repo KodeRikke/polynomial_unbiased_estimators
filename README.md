@@ -1,8 +1,42 @@
+# Preface
 As the contributor of this repo is, in her heart, a Machine Learner (MLer), and NOT a Computer Scientist, the basics of "good code" was not a fundament of her professional education. Rather, when a MLer does their work; they code, they patch-up, they get their result, and then they throw their code in the trash,  never to look at it again. 
 Though sufficient for some task, this contributor deemed this approach inadequate for this project and leaned on her problem-solving skills, her structure (lol) and her stubbornness to come up with a better plan.
 Thus the structure of this code might not live up to the professionel expectations from an inherent Computer Sciencetist, but please, bear with this author, as her ML-DNA is showing within the lines of this code base.
-True to the heart of DIKU, some of this code has also been created while drunk.
+True to the heart of DIKU, some of this code has also been created while drinking.
 
+# Welcome! 
+This codebase exist as a product of the thesis "Bias-Variance Analysis of Polynomial Estimators under Differential Privacy" and serve as both a tool and a deliverable for the final project. It builds on the closed form expression of unbiased estimators from Theorem 10 by Calmon et al. and the linear system for general noise distributions from Theorem 22 by Calmon et al. 
+
+In the main folder, the main architecture lies; dp_estimators.py and noise_models.py. These files implements the main functionality of this repo, which includes:
+for any given univariate polynomial function, it is possible to: 
+\begin{itemize}
+
+    \item Compute the unbiased estimator under Laplace noise using the closed-form formula from Theorem 10 (the \texttt{LaplaceNoiseModel} class).
+
+    \item Compute the unbiased estimator under Gaussian noise by solving the linear system from the proof of Theorem 22 (the \texttt{GaussianNoiseModel} class inheriting from the \texttt{NoiseModel} class).
+
+    \item Compute the naive estimator.
+
+    \item Compute analysis of all estimators including mean, bias (for the naive), variance and MSE. 
+
+    \item Compare different estimators for said function by computing gaps between analysis measures.
+    
+\end{itemize} 
+
+# User Guide
+
+
+Important!
+When using the library, remember that SymPy uses SYMBOLIC expressions and functions. Therefor the symbols needs to be defined as "symbolic", i.e.:
+
+    Delta = sp.Symbol("Delta", real=True, positive=True)
+    epsilon = sp.Symbol("epsilon", real=True, positive=True)
+    q = sp.Symbol("q", real=True)
+    X = sp.Symbol("X", real=True)
+
+And then later substituted with real values. This property is fundamental for this code base. 
+
+# Dependencies
 ------------------------ Dependencies ------------------------------
 
     All files: 
@@ -69,75 +103,27 @@ True to the heart of DIKU, some of this code has also been created while drunk.
 
 ----------------------- Dependencies --------------------------------
 
-When using the library, remember that SymPy uses SYMBOLIC expressions and functions. Therefor the symbols needs to be defined as "symbolic", i.e.:
+# Design
+The main modules are in the files dp_estimators.py and noise_models.py. 
+The four classes in \texttt{dp\_estimators.py} are:
+\begin{itemize}
+    \item EstimatorSystem: the main interface for users to interact with the system, providing methods for getting estimators and comparing them.
+    \item ComparisonReport: responsible for generating a report for a given polynomial function.
+    \item EstimatorContext: responsible for managing different noise/estimation strategies and providing methods for getting naive and unbiased estimators.
+    \item EstimatorAnalyzer: responsible for analyzing the properties of estimators, such as calculating mean, variance etc, using the noise model's moment calculations.
+\end{itemize}
+The three classes in \texttt{noise\_models.py} are:
+\begin{itemize}
+    \item NoiseModel: an abstract base class defining the interface for the possible noise distributions. Further it implements the linear system from Section \ref{section_GeneralNoiseDistributions} as a fallback method for the unbiased transform.
+    \item LaplaceNoiseModel: a concrete strategy class calculating the unbiased transformation of a polynomial under Laplace noise.
+    \item GaussianNoiseModel: a concrete strategy class that inherits the fallback method from the NoiseModel class.
+\end{itemize}
 
-    Delta = sp.Symbol("Delta", real=True, positive=True)
-    epsilon = sp.Symbol("epsilon", real=True, positive=True)
-    q = sp.Symbol("q", real=True)
-    X = sp.Symbol("X", real=True)
+The code structure follows the Facade design pattern, where the EstimatorSystem class provides a simplified interface to the complex subsystem of noise models, estimation strategies, and analysis. The user of the code base only interacts with the class EstimatorSystem, and instances of the other classes are initiated through this class, except for the ComparisonReport which though still needs and instance of EstimatorSystem as input. EstimatorSystem is also responsible for delegating the comparison of estimator of a given polynomial function to the ComparisonReport class. 
 
-And then later substituted with real values. This property is fundamental for this code base. 
+Further it follows the Strategy design pattern,where the EstimatorContext class manages different estimation strategies. This includes which type of noise the unbiased estimator should employ. The class NoiseModel defines a common abstract interface for noise models, thus supporting different noise distributions. The two classes, LaplaceNoiseModel and GaussianNoiseModel inherits NoiseModel and provide concrete implementations of this interface. When EstimatorContext is initiated, it maintains a reference to the object created from one of the concrete strategies. EstimatorContext interacts with this object only through the interface defined by NoiseModel. 
+Further EstimatorContext also produces the naive estimator. 
 
+The EstimatorAnalyzer class manages the \textit{analysis} of any of the estimators, i.e. it creates corresponding mean, variance, MSE and bias. It serves the same purpose as the "Context" in the Strategy pattern, only here the estimator and analysis of the estimator are split into two classes to avoid overloading the EstimatorContext class. 
 
-New files:
-
-    monte_carlo/simulation.py
-    scripts/run_monte_carlo_study.py
-    plotting/plot_monte_carlo_study.py
-
-Purpose:
-
-    Empirically compare naive vs unbiased estimators for high-order polynomials
-    under Laplace and Gaussian noise, while validating against symbolic theory.
-     The study now includes coefficient sweeps, so the empirical plots can be
-     compared directly against the quadratic and cubic derivations and then
-     extended to higher-degree families.
-
-Run:
-
-    python3 scripts/run_monte_carlo_study.py
-
-    # quick run (smaller sample size / faster)
-    python3 scripts/run_monte_carlo_study.py --quick --samples 15000 --seed 1337
-     # coefficient-only study
-     python3 scripts/run_monte_carlo_study.py --study-mode coefficients --samples 15000 --seed 1337
-
-What it does:
-
-    - Builds symbolic estimators using EstimatorSystem
-    - Substitutes all non-swept symbols numerically before runtime
-    - Samples noise and computes empirical mean/variance/MSE/bias
-    - Prints symbolic metrics and empirical-vs-symbolic errors
-     - Sweeps polynomial coefficients for quadratic, cubic, and higher-degree
-        families so coefficient sensitivity is visible in the Monte Carlo data
-    - Saves a CSV file at reports/monte_carlo/monte_carlo_results.csv
-
-Plot summaries:
-
-    python3 plotting/plot_monte_carlo_study.py
-
-    # focus degree-trend plots at q=1.0 (default)
-    python3 plotting/plot_monte_carlo_study.py --q-focus 1.0
-     The plotting script also produces per-family coefficient-sweep summaries.
-
-Presentation figure:
-
-    python3 plotting/plot_symbolic_presentation.py --output-dir plots/presentation
-
-    # recommended epsilon set for the main presentation figure
-    python3 plotting/plot_symbolic_presentation.py --output-dir plots/presentation --epsilons 0.5 1.0 2.0
-
-This creates a compact 2x2 symbolic summary for the baseline quadratic,
-transition cubic, Chebyshev exception, and a coefficient-sensitive cubic.
-The MSE figure is the best candidate for the main text; the variance figure
-is useful as a supporting or appendix graphic.
-
-Notes:
-
-    - For Gaussian runs, sigma is calibrated from (epsilon, delta, Delta)
-      using dp_calibration/SigmaFromEpsilon.py.
-    - For high-order polynomials, variance can be extremely large; empirical
-      convergence may require many more Monte Carlo samples than low-order cases.
-     - The coefficient sweeps are intentionally small and structured so the
-        quadratic and cubic empirical results can be checked against the theory
-        before interpreting higher-degree behavior.
+The ComparisonReport class is responsible for generating a report comparing the naive and unbiased estimators for a given polynomial function, by calculating their means, variances, MSE, bias and the gaps between them. Different specifications are possible, depending on whether the user wants to get a quick overview of the estimators of a polynomial in the terminal or rather wants to get a report printed on PDF.
