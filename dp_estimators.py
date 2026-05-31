@@ -37,20 +37,20 @@ class EstimatorSystem:
     When initializing the EstimatorSystem, the following needs to be provided:
         noise_model: an instance of a NoiseModel (e.g., LaplaceNoiseModel)
         q: a variable s.a. an int, float or sympy symbol representing the original statistic
-        x: a variable s.a. an int, float or sympy symbol representing the observed statistic, x = q + noise 
-    It changes q and x into strings, s.t they can be changed to sympy symbols in the context and analyzer."""
-    def __init__(self, noise_model: NoiseModel, q: Union[int, float, sp.Symbol], x: Union[int, float, sp.Symbol]):
+        Q: a variable s.a. an int, float or sympy symbol representing the observed statistic, Q = q + noise
+    It changes q and Q into strings, s.t they can be changed to sympy symbols in the context and analyzer."""
+    def __init__(self, noise_model: NoiseModel, q: Union[int, float, sp.Symbol], Q: Union[int, float, sp.Symbol]):
         self.noise_model = noise_model
         self.q = sp.Symbol(str(q), real=True)
-        self.x = sp.Symbol(str(x), real=True)
-        self.context = EstimatorContext(noise_model, str(q), str(x)) # initialize context
-        self.analyzer = EstimatorAnalyzer(noise_model, str(q), str(x)) # initialize analyzer
+        self.Q = sp.Symbol(str(Q), real=True)
+        self.context = EstimatorContext(noise_model, str(q), str(Q)) # initialize context
+        self.analyzer = EstimatorAnalyzer(noise_model, str(q), str(Q)) # initialize analyzer
 
     """
-    The estimator method takes a polynomial function f in q and returns the corresponding estimator g in x, depending on the specified biasedness.
+    The estimator method takes a polynomial function f in q and returns the corresponding estimator g in Q, depending on the specified biasedness.
 
     Input: f is a polynomial function in q, biasedness is either "naive" or "unbiased".
-    Output: the corresponding estimator g in x.
+    Output: the corresponding estimator g in Q.
     """
     def estimator(self, f, biasedness="naive"):
         if biasedness == "naive":
@@ -214,22 +214,22 @@ class EstimatorContext:
     When initializing the EstimatorContext, the following needs to be provided:
         noise_model: an instance of a NoiseModel (e.g., LaplaceNoiseModel)
         q: a variable s.a. an int, float or sympy symbol representing the original statistic
-        x: a variable s.a. an int, float or sympy symbol representing the observed statistic, x = q + noise 
+        Q: a variable s.a. an int, float or sympy symbol representing the observed statistic, Q = q + noise 
     It changes q and x into sympy symbols, s.t they can be used in the noise model and analyzer."""
-    def __init__(self, noise_model: NoiseModel, q: str, x: str):
+    def __init__(self, noise_model: NoiseModel, q: str, Q: str):
         self.noise_model = noise_model
         self.q = sp.Symbol(q, real=True)
-        self.x = sp.Symbol(x, real=True)
+        self.Q = sp.Symbol(Q, real=True)
 
     """ 
-    The naive estimator is a plug-in estimator. It is calculated by substituting q with x in the polynomial function f, s.t the function stays the same, i.e. g = f.
+    The naive estimator is a plug-in estimator. It is calculated by substituting q with Q in the polynomial function f, s.t the function stays the same, i.e. g = f.
 
     Input: f is a polynomial function in q.
-    Output: the plug-in estimator g(x) = f(q), which is just the substitution of q with x, s.t the function stays the same, i.e. g = f.
+    Output: the plug-in estimator g(Q) = f(q), which is just the substitution of q with Q, s.t the function stays the same, i.e. g = f.
     """
     def naive(self, f):
         f = sp.sympify(f)
-        return f.subs(self.q, self.x) # naive is just substitution
+        return f.subs(self.q, self.Q) # naive is just substitution
         # .subs is used to substitute a variable or expression with a specified 
         # value or another expression in a symbolic mathematical expression
 
@@ -237,12 +237,12 @@ class EstimatorContext:
     The unbiased estimator is calculated using the noise model's unbiased_transform method.
 
     Input: f is a polynomial function in q.
-    Output: the unbiased estimator g(x), which is calculated using the noise model's unbiased_transform method, 
+    Output: the unbiased estimator g(Q), which is calculated using the noise model's unbiased_transform method, 
     implemented according to the specific noise distribution."""
     def unbiased(self, f):
         f = sp.sympify(f)
-        f_in_x = f.subs(self.q, self.x) # substitute q with x in f to turn f(q) into f(x) = f(q + noise)
-        g = self.noise_model.unbiased_transform(f_in_x, self.x)
+        f_in_Q = f.subs(self.q, self.Q) # substitute q with Q in f to turn f(q) into f(Q) = f(q + noise)
+        g = self.noise_model.unbiased_transform(f_in_Q, self.Q)
         return sp.expand(g)
 
 # --- Context EstimatorAnalyzer ---
@@ -252,18 +252,18 @@ class EstimatorAnalyzer:
     When initializing the EstimatorAnalyzer, the following needs to be provided:
         noise_model: an instance of a NoiseModel (e.g., LaplaceNoiseModel)
         q: a variable s.a. an int, float or sympy symbol representing the original statistic
-        x: a variable s.a. an int, float or sympy symbol representing the observed statistic, x = q + noise 
-    It changes q and x into sympy symbols, s.t they can be used in the noise model and analyzer."""
-    def __init__(self, noise_model: NoiseModel, q: str, x: str):
+        Q: a variable s.a. an int, float or sympy symbol representing the observed statistic, Q = q + noise 
+    It changes q and Q into sympy symbols, s.t they can be used in the noise model and analyzer."""
+    def __init__(self, noise_model: NoiseModel, q: str, Q: str):
         self.noise_model = noise_model
         self.q = sp.Symbol(q, real=True)
-        self.x = sp.Symbol(x, real=True)
+        self.Q = sp.Symbol(Q, real=True)
 
     """
     The mean method calculates the mean of the estimator, using the noise model's moment method, 
     implemented according to the specific noise distribution.
 
-    Input: the estimator as a polynomial function in x.
+    Input: the estimator as a polynomial function in Q.
     Output: the mean of the estimator, which is calculated using the noise model's moment method,
     implemented according to the specific noise distribution.
     """
@@ -272,19 +272,19 @@ class EstimatorAnalyzer:
 
         # Exception handling: 
 
-        # 1) If the estimator does not depend on x, 
+        # 1) If the estimator does not depend on Q, 
         # then it is a constant and its mean is just itself.
-        if not estimator.has(self.x):
+        if not estimator.has(self.Q):
             return estimator
         
-        # 2) If the estimator it NOT a polynomial in x, 
+        # 2) If the estimator it NOT a polynomial in Q, 
         # then the moments method for calculating the mean does not apply.
-        # forcing polynomial to be univariate in x
+        # forcing polynomial to be univariate in Q
         try:
-            poly = sp.Poly(estimator, self.x, domain="EX") 
+            poly = sp.Poly(estimator, self.Q, domain="EX") 
             # setting domain to EX allows the coeffs to be arbitrary expressions
         except sp.PolynomialError:
-            raise ValueError("Estimator must be a polynomial in x.")
+            raise ValueError("Estimator must be a polynomial in Q.")
         
         # 3) If there is a zero polynomial, then degree = -oo is avoided.
         if poly.is_zero:
@@ -305,7 +305,7 @@ class EstimatorAnalyzer:
     """ 
     The variance method calculates the variance of the estimator, using the mean method.
 
-    Input: estimator as a polynomial function in x.
+    Input: estimator as a polynomial function in Q.
     Output: the variance of the estimator, which is calculated using the mean method.
     """
     def variance(self, estimator):
@@ -320,12 +320,12 @@ class EstimatorAnalyzer:
     """
     The Mean Squared Error (MSE) of the estimator, depending on the unknown target statistic.
     Thus this is an a priori property of the estimator, as it depends on the true value of the statistic, which is unknown at the time of estimation.
-    For f(q) as the target statistic and g(x) as the estimator, it is calculated as:
-    E[(g(x) - f(q))^2], or 
-    Var_[q](x) + Bias(x,f(q))^2.
+    For f(q) as the target statistic and g(Q) as the estimator, it is calculated as:
+    E[(g(Q) - f(q))^2], or 
+    Var_[q](Q) + Bias(Q,f(q))^2.
 
     Input:
-        estimator: a polynomial function in x representing the estimator
+        estimator: a polynomial function in Q representing the estimator
         target_statistic: a variable representing the true statistic, which can be f(q) for some polynomial f, or just q itself.
     Output: the MSE of the estimator, which is calculated using the variance, mean and bias methods.
     """
@@ -351,11 +351,11 @@ class EstimatorAnalyzer:
     """
     The Bias of the estimator, depending on the unknown target statistic.
     Thus this is an a priori property of the estimator, as it depends on the true value of the statistic, which is unknown at the time of estimation.
-    For f(q) as the target statisti and h(x) as the estimator:
-    Bias(h(x),f(q)) = E[h(x)] - f(q).
+    For f(q) as the target statisti and h(Q) as the estimator:
+    Bias(h(Q),f(q)) = E[h(Q)] - f(q).
     
     Input:
-        estimator: a polynomial function in x representing the estimator (often only the naive estimator).
+        estimator: a polynomial function in Q representing the estimator (often only the naive estimator).
         target_statistic: a variable representing the true statistic, which can be f(q) for some polynomial f, or just q itself.
     Output: the bias of the estimator, which is calculated using the mean method.
     """

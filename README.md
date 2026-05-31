@@ -88,6 +88,21 @@ And then later substituted with real values. This property is fundamental for th
         numpy, os, matplotlib, pathlib.Path
     
     # Plotting
+
+    plot_symbolic_presentation.py
+        annotations
+        pathlib.Path
+        argparse
+        sys
+        matplotlib
+        nympy
+        sympy 
+        dp
+        dp_estimators.EstimatorSystem
+        noise_models.LaplaceNoiseModel, GaussianNoiseModel
+        dp_calibration.SigmaFromEpsilon
+        plotting.utility_plotting.add_reference_line, evaluate_on_grid
+
     relative_laplace_vs_gaussian.py
         sympy, numpy, os.path
         dp_estimators.EstimatorSystem, noise_models.LaplaceNoiseModel, noise_models.GaussianNoiseModel,

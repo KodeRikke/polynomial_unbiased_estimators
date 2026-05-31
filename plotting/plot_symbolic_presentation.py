@@ -331,9 +331,9 @@ def render_figure_epsilon_fixed(
             "#1B4965",  # quadratic        — dark blue
             "#9D0264",  # cubic            — dark red
             "#BC5800",  # quartic          — dark orange
-            "#62B6CB",  # quadratic_coeffs — light blue
-            "#E676E4",  # cubic_coeffs     — light red/pink
-            "#F4A259",  # quartic_coeffs   — light orange
+            "#90DCEF",  # quadratic_coeffs — light blue
+            "#F792F5",  # cubic_coeffs     — light red/pink
+            "#F49A77",  # quartic_coeffs   — light orange
         ]
     else:
         poly_colors = plt.cm.tab10(np.arange(len(poly_names)) / 10)

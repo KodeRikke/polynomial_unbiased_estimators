@@ -21,31 +21,31 @@ class NoiseModel:
     OBS! The noise model can only be of distributions with known moments.
     It requires the implementation of the following methods:
         moment(n, q): calculates the n-th raw moment of the released statistics, q + noise.
-        unbiased_transform(f, x): takes a polynomial function f in q and returns the unbiased 
-        estimator g(x) in x, s.t. E[g(q + noise)] = f(q) for the given polynomial f.
+        unbiased_transform(f, Q): takes a polynomial function f in q and returns the unbiased 
+        estimator g(Q) in Q, s.t. E[g(q + noise)] = f(q) for the given polynomial f.
         clear_cache(): clears the cache of the moment method, if implemented with caching.
         cache_info(): returns the cache information of the moment method, if implemented with caching.
     """
     
     def moment(self, n, q):
-        # \mu_n(q) = E[(q + noise)^n] for x = q + noise
+        # \mu_n(q) = E[(q + noise)^n] for Q = q + noise
         raise NotImplementedError("Subclasses must implement this method")
 
-    def unbiased_transform(self, f, x):
-        return self._general_unbiased_transform(self, f, x)
+    def unbiased_transform(self, f, Q):
+        return self._general_unbiased_transform(self, f, Q)
     
     @staticmethod
-    def _general_unbiased_transform(self, f, x):
+    def _general_unbiased_transform(self, f, Q):
         """"
         The _general_unbiased_transform method is a helper-function and a 
         general implementation of the unbiased transform for any noise model
         with known raw moments and a polynomial function f. It builds and 
         solves the linear system from Calmon et al., THM 22, to find the 
-        unbiased estimator g(x) s.t. E[g(q + noise)] = f(q).
+        unbiased estimator g(Q) s.t. E[g(q + noise)] = f(q).
         This is done by defining the coefficients of f as the vector b, 
         then building the matrix M from the raw moments of the noise distribution, 
         and finally solving the linear system M a = b 
-        for the coefficients a of the unbiased estimator g(x).
+        for the coefficients a of the unbiased estimator g(Q).
 
         This is a general implememntation that works for any noise model
         with known raw moments and any polynomial function f, 
@@ -53,8 +53,8 @@ class NoiseModel:
 
         Input: 
         - f: a polynomial function in q,
-        - x: the variable representing the observed statistic.
-        Output: the unbiased estimator g(x) = sum_i a_i x^i, s.t. E[g(x)] = f(q).
+        - Q: the variable representing the observed statistic.
+        Output: the unbiased estimator g(Q) = sum_i a_i Q^i, s.t. E[g(Q)] = f(q).
 
         """
         # symbolic symbols
@@ -62,14 +62,14 @@ class NoiseModel:
 
         # extract degree from f
         f = sp.sympify(f)
-        poly = sp.Poly(f, x)
+        poly = sp.Poly(f, Q)
         degree = poly.degree()
 
         # extract coefficients of f(q), from highest degree to lowest degree
         # this should hold for any polynomial, 
         # as long as the degree is correctly extracted
         # b[k] is coefficients of q^k
-        f_in_q = f.subs(x, q)
+        f_in_q = f.subs(Q, q)
         f_poly = sp.Poly(f_in_q, q)
         b = [
             f_poly.coeff_monomial(q**k) for k in range(degree + 1)
@@ -92,8 +92,8 @@ class NoiseModel:
         # solve the linear system for a
         a = M.LUsolve(sp.Matrix(b))
 
-        # build the unbiased estimator g(x) = sum_i a_i x^i
-        g = sum(a[i] * x**i for i in range(degree + 1))
+        # build the unbiased estimator g(Q) = sum_i a_i Q^i
+        g = sum(a[i] * Q**i for i in range(degree + 1))
         
         return sp.expand(g)
     
@@ -156,21 +156,21 @@ class LaplaceNoiseModel(NoiseModel):
             expr += sp.binomial(i, k) * q**(i - k) * self._noise_central_moment(k)
         return expr
     
-    def unbiased_transform(self, f, x):
+    def unbiased_transform(self, f, Q):
         """ 
         This Laplace-specific implementation of the unbiased_transform method 
         replaces the general linear system solution with the (faster)
         closed-form solution for the unbiased estimator under Laplace noise.
 
-        The unbiased_transform method takes a polynomial function f in q and returns the unbiased estimator g(x) in x,
+        The unbiased_transform method takes a polynomial function f in q and returns the unbiased estimator g(Q) in Q,
         s.t. E[g(q + noise)] = f(q) for the given polynomial f.
 
         Input: 
         f: a polynomial function in q, 
-        x: the variable representing the observed statistic.
-        Output: the unbiased estimator g(x) = f(x) - (Delta/epsilon)^2 f''(x), s.t. E[g(x)] = f(q).
+        Q: the variable representing the observed statistic.
+        Output: the unbiased estimator g(Q) = f(Q) - (Delta/epsilon)^2 f''(Q), s.t. E[g(Q)] = f(q).
         """
-        f_dd = sp.diff(f, x, 2)  # second derivative
+        f_dd = sp.diff(f, Q, 2)  # second derivative
         g = f - (self.Delta / self.epsilon)**2 * f_dd
         return g
     

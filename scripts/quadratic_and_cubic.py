@@ -3,18 +3,19 @@ from dp_estimators import EstimatorSystem
 from noise_models import GaussianNoiseModel, LaplaceNoiseModel
 # Define the SymPy symbols used in the polynomials
 q = sp.Symbol("q", real=True)
+Q = sp.Symbol("Q", real=True)  # observed statistic for Laplace
 a, b, c, d, e, f = sp.symbols("a b c d e f", real=True)
 
 # initialize the EstimatorSystem with the Laplace noise model and the symbolic variables
 lap_sys = EstimatorSystem(
     noise_model=LaplaceNoiseModel(Delta="Delta", epsilon="epsilon"),
     q="q",
-    x="X"
+    Q="Q"
 )
 gauss_sys = EstimatorSystem(
     noise_model=GaussianNoiseModel(sigma="sigma"),
     q="q",
-    x="X"
+    Q="Q"
 )
 
 # define the cubic / quadratic function f(q) = a*q**3 + b*q**2 + c*q + d / f(q) = a*q**2 ...
