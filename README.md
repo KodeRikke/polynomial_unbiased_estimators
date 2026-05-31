@@ -21,7 +21,7 @@ for any given univariate polynomial function, it is possible to:
 - Compare different estimators for said function by computing gaps between analysis measures.
 
 
-# User Guide
+# Quick start guide
 
 All the existing scripts in this code-base is in the separate folder scripts. For most fluent use, all future scripts should also be in this folder. For a quick start, if a user wants to analyze the estimators of a polynomial function, the file univariate_script.py has been provided. From main folder in terminal, run 
     python -m scripts.univariate_script
@@ -137,3 +137,7 @@ functionality file is the mc_validation.py-file and the functions for producing 
 run_plots.py-files. There is a markdown-file, MC_VALIDATION.md with further specifications for
 reproducibility. All sweeps related to the quadratic are referenced as experiment_Q in the Monte
 Carlo files.
+
+# Calibratian for Gaussian 
+All code realted to the calibration of sigma for the Gaussian unbiased transform can be found in the folder dp_calibration/.
+The implementation is taken directly from [Balle and Wang, ICML'18]. 
