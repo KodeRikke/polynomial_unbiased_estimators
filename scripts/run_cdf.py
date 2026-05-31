@@ -48,7 +48,7 @@ CASES = [
         "q_val":   0,
         "s_val":   0.3,         # epsilon ≈ 3.0, Delta = 1.0
         "t_range": (-3, 3), 
-        "label":   r"$f(q)=q^3+q$ with $s=0.3$",
+        "label":   r"(safe) $f(q)=q^3+q$ with $s=0.3$",
     },
     # Panel 2 — unsafe polynomial, but s > s*  →  effectively safe noise level
     {
@@ -56,7 +56,7 @@ CASES = [
         "q_val":   0,
         "s_val":   0.7,        # s=0.7 > s*≈0.58  →  safe
         "t_range": (-6, 6),
-        "label":   r"$f(q)=q^3-3q$ with $s=0.7$",
+        "label":   r"(safe) $f(q)=q^3-3q$ with $s=0.7$",
     },
     # Panel 3 — unsafe polynomial, s < s*  →  unsafe regime
     {
@@ -64,7 +64,7 @@ CASES = [
         "q_val":   0,
         "s_val":   0.3,         # s=0.3 < s*≈0.58  →  unsafe
         "t_range": (-3, 3),
-        "label":   r"$f(q)=q^3-3q$ with $s=0.3$",
+        "label":   r"(unsafe) $f(q)=q^3-3q$ with $s=0.3$",
     },
     # Panel 4 — more extreme unsafe polynomial, s << s*
     {
@@ -72,7 +72,7 @@ CASES = [
         "q_val":   0,
         "s_val":   0.3,         # s=0.3 << s*≈1.73  →  strongly unsafe
         "t_range": (-8, 8),
-        "label":   r"$f(q)=q^3-9q$ with $s=0.3$",
+        "label":   r"(strongly unsafe) $f(q)=q^3-9q$ with $s=0.3$",
     },
 ]
 # Baselines: q**3 
