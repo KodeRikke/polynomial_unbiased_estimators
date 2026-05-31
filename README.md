@@ -107,6 +107,7 @@ And then later substituted with real values. This property is fundamental for th
 
 
 # Design
+See UML diagram in the Markdown file architecture.md.
 The main modules are in the files dp_estimators.py and noise_models.py. 
 The four classes in dp_estimators.py are:
 
@@ -131,12 +132,17 @@ The EstimatorAnalyzer class manages the \textit{analysis} of any of the estimato
 
 The ComparisonReport class is responsible for generating a report comparing the naive and unbiased estimators for a given polynomial function, by calculating their means, variances, MSE, bias and the gaps between them. Different specifications are possible, depending on whether the user wants to get a quick overview of the estimators of a polynomial in the terminal or rather wants to get a report printed on PDF.
 
+# Scripts, Plotting, Plots and Reports
+All files related to plotting of thing in this repo is in the Plotting/ folder. Plotting things consist often of running the corresponding script in the scripts/ folder. Often files will be named "plot_X.py" in the plotting-folder and correspondingly "run_X.py" in the scripts/ folder. 
+All plots created from running the scripts will land in the plots/ folder, maybe in subfolders.
+Some script do not have corresponding "plot_x.py"-files and run other things s.a. analyzes for estimator, printing to terminal or creating .tex files. Some are also experimental scripts that serves only as explorative material doen throughout this project. Often running a script that does not have a corresponding plotting file will result in something else being created in the reports/ folder. 
+
 # Monte Carlo 
 All code related to the Monte Carlo sweeps can be found in the folder mc in the GitHub repo. The
 functionality file is the mc_validation.py-file and the functions for producing the plots are in the
 run_plots.py-files. There is a markdown-file, MC_VALIDATION.md with further specifications for
 reproducibility. All sweeps related to the quadratic are referenced as experiment_Q in the Monte
-Carlo files.
+Carlo files. All figures related to monte carlo is in the figures/ folder, seperate from all other generated files.
 
 # Calibratian for Gaussian 
 All code realted to the calibration of sigma for the Gaussian unbiased transform can be found in the folder dp_calibration/.
